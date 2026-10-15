@@ -1,0 +1,24 @@
+{
+  "id": "dev.gnotch.agent-workspace",
+  "name": "Agent Workspace",
+  "version": "0.1.0",
+  "description": "Tasks, projects and supervised coding-agent runs (Claude Code, Codex) from the notch.",
+  "author": "Gnotch contributors",
+  "license": "MIT",
+  "api": "1.0",
+  "icon": "view-list-symbolic",
+  "activation": "startup",
+  "entry": { "backend": ["python3", "backend.py"] },
+  "permissions": ["process.spawn", "filesystem", "notifications", "activities"],
+  "provides": ["inbox.add", "tasks.list"],
+  "settings": [
+    { "key": "default_agent", "type": "choice", "label": "Default agent", "default": "claude-code",
+      "choices": ["claude-code", "codex"] },
+    { "key": "default_permission", "type": "choice", "label": "Default permission level", "default": "safest",
+      "choices": ["safest", "edits"] },
+    { "key": "max_concurrent", "type": "number", "label": "Max concurrent runs", "default": 2 },
+    { "key": "log_lines", "type": "number", "label": "Log lines shown", "default": 25 },
+    { "key": "claude_path", "type": "string", "label": "Claude Code executable (optional)", "default": "" },
+    { "key": "codex_path", "type": "string", "label": "Codex executable (optional)", "default": "" }
+  ]
+}

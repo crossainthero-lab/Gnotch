@@ -1,0 +1,81 @@
+/* Gnotch: black / white / neutral. No accent colour on purpose. */
+.gnotch {
+  background-color: #000;
+  color: #f2f2f2;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.gnotch.gnotch-expanded { border-radius: 0 0 28px 28px; box-shadow: 0 14px 40px rgba(0,0,0,0.5); }
+.gnotch.gnotch-light { background-color: #f6f6f6; color: #161616; box-shadow: 0 6px 18px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.12); border-top-width: 0; }
+.gnotch-bar { padding: 0 12px; spacing: 6px; min-height: 28px; }
+.gnotch-bar-text { font-size: 0.9em; font-weight: 600; }
+.gnotch-bar-icon { color: inherit; }
+.gnotch-dot { width: 8px; height: 8px; border-radius: 4px; background-color: #bdbdbd; }
+.gnotch-dot-recording { background-color: #ff453a; }
+.gnotch-dot-active { background-color: #f2f2f2; }
+.gnotch-light .gnotch-dot-active { background-color: #161616; }
+.gnotch-dot-warning { background-color: #ffd60a; }
+.gnotch-dot-error { background-color: #ff453a; }
+
+.gnotch-switcher { spacing: 4px; }
+.gnotch-switch { padding: 5px 9px; border-radius: 99px; color: rgba(255,255,255,0.55); }
+.gnotch-light .gnotch-switch { color: rgba(0,0,0,0.5); }
+.gnotch-switch:hover { background-color: rgba(255,255,255,0.1); }
+.gnotch-light .gnotch-switch:hover { background-color: rgba(0,0,0,0.07); }
+.gnotch-switch-active { background-color: rgba(255,255,255,0.16); color: #fff; }
+.gnotch-light .gnotch-switch-active { background-color: rgba(0,0,0,0.1); color: #000; }
+.gnotch-switch-busy { border-bottom: 2px solid #ff453a; }
+.gnotch-gear { padding: 5px; border-radius: 99px; color: rgba(255,255,255,0.55); }
+.gnotch-gear:hover { background-color: rgba(255,255,255,0.1); }
+.gnotch-light .gnotch-gear { color: rgba(0,0,0,0.5); }
+
+.gnotch-body { padding: 0 8px 4px 8px; }
+.gnotch-body-box { padding: 6px 10px 14px 10px; spacing: 8px; }
+.gnotch-label { color: inherit; }
+.gnotch-title { font-size: 1.25em; font-weight: 700; }
+.gnotch-body { font-size: 1em; }
+.gnotch-dim { color: rgba(255,255,255,0.55); }
+.gnotch-light .gnotch-dim { color: rgba(0,0,0,0.55); }
+.gnotch-caption { font-size: 0.82em; color: rgba(255,255,255,0.55); }
+.gnotch-light .gnotch-caption { color: rgba(0,0,0,0.55); }
+.gnotch-mono { font-family: monospace; font-size: 0.9em; }
+
+.gnotch-button { padding: 5px 12px; border-radius: 10px; background-color: rgba(255,255,255,0.12); color: inherit; font-weight: 600; }
+.gnotch-button:hover { background-color: rgba(255,255,255,0.2); }
+.gnotch-button:active { background-color: rgba(255,255,255,0.3); }
+.gnotch-button-primary { background-color: #f2f2f2; color: #000; }
+.gnotch-button-primary:hover { background-color: #fff; }
+.gnotch-button-danger { background-color: rgba(255,69,58,0.2); color: #ff6961; }
+.gnotch-button-flat { background-color: transparent; }
+.gnotch-light .gnotch-button { background-color: rgba(0,0,0,0.07); color: #161616; }
+.gnotch-light .gnotch-button:hover { background-color: rgba(0,0,0,0.13); }
+.gnotch-light .gnotch-button-primary { background-color: #161616; color: #fff; }
+.gnotch-light .gnotch-button-flat { background-color: transparent; }
+
+.gnotch-entry { padding: 6px 10px; border-radius: 10px; background-color: rgba(255,255,255,0.1); color: inherit; caret-color: inherit; border: 1px solid transparent; selection-background-color: rgba(255,255,255,0.3); }
+.gnotch-entry:focus { border-color: rgba(255,255,255,0.45); }
+.gnotch-entry StLabel.hint-text { color: rgba(255,255,255,0.4); }
+.gnotch-light .gnotch-entry { background-color: rgba(0,0,0,0.06); }
+.gnotch-light .gnotch-entry:focus { border-color: rgba(0,0,0,0.4); }
+
+.gnotch-separator { background-color: rgba(255,255,255,0.12); }
+.gnotch-light .gnotch-separator { background-color: rgba(0,0,0,0.12); }
+.gnotch-progress { background-color: rgba(255,255,255,0.14); border-radius: 3px; }
+.gnotch-progress-fill { background-color: #f2f2f2; border-radius: 3px; }
+.gnotch-light .gnotch-progress-fill { background-color: #161616; }
+
+.gnotch-tabs { spacing: 4px; padding: 3px; border-radius: 12px; background-color: rgba(255,255,255,0.08); }
+.gnotch-tab { padding: 4px 12px; border-radius: 9px; color: rgba(255,255,255,0.65); font-weight: 600; }
+.gnotch-tab-active { background-color: rgba(255,255,255,0.18); color: #fff; }
+.gnotch-light .gnotch-tabs { background-color: rgba(0,0,0,0.06); }
+.gnotch-light .gnotch-tab { color: rgba(0,0,0,0.6); }
+.gnotch-light .gnotch-tab-active { background-color: rgba(0,0,0,0.12); color: #000; }
+
+.gnotch-row { padding: 6px 8px; border-radius: 10px; spacing: 8px; }
+.gnotch-row-active:hover { background-color: rgba(255,255,255,0.09); }
+.gnotch-light .gnotch-row-active:hover { background-color: rgba(0,0,0,0.06); }
+.gnotch-row-title { font-weight: 600; }
+.gnotch-row-subtitle { font-size: 0.85em; color: rgba(255,255,255,0.55); }
+.gnotch-light .gnotch-row-subtitle { color: rgba(0,0,0,0.55); }
+.gnotch-badge { font-size: 0.8em; padding: 1px 8px; border-radius: 99px; background-color: rgba(255,255,255,0.14); }
+.gnotch-light .gnotch-badge { background-color: rgba(0,0,0,0.1); }

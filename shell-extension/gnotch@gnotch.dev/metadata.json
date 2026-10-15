@@ -1,0 +1,9 @@
+{
+  "uuid": "gnotch@gnotch.dev",
+  "name": "Gnotch",
+  "description": "An extensible notch for the GNOME top bar. Addons run in a separate service; the shell only renders declarative views.",
+  "shell-version": ["50"],
+  "settings-schema": "org.gnome.shell.extensions.gnotch",
+  "url": "https://github.com/crossainthero-lab/Gnotch",
+  "version-name": "0.1.0"
+}

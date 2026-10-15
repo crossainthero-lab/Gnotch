@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gnotch addon manifest (API 1.x)",
+  "type": "object",
+  "required": ["id", "name", "version", "api"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9][a-z0-9-]*)+$"},
+    "name": {"type": "string"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+([-+][0-9A-Za-z.-]+)?$"},
+    "api": {"type": "string", "pattern": "^\\d+\\.\\d+$"},
+    "description": {"type": "string"},
+    "author": {"type": "string"},
+    "license": {"type": "string"},
+    "homepage": {"type": "string"},
+    "icon": {"type": "string", "description": "Symbolic icon name from the user's icon theme"},
+    "activation": {"enum": ["startup", "onDemand"], "default": "startup"},
+    "entry": {"type": "object", "required": ["backend"], "properties": {"backend": {"type": "array", "items": {"type": "string"}, "minItems": 1}}},
+    "permissions": {"type": "array", "items": {"type": "string"}},
+    "provides": {"type": "array", "items": {"type": "string"}},
+    "settings": {"type": "array", "items": {"type": "object", "required": ["key", "type"],
+      "properties": {"key": {"type": "string"}, "type": {"enum": ["boolean", "string", "number", "choice", "secret-env"]},
+        "label": {"type": "string"}, "default": {}, "choices": {"type": "array"}, "min": {"type": "number"}, "max": {"type": "number"}, "step": {"type": "number"}}}},
+    "shortcuts": {"type": "array", "items": {"type": "object", "required": ["id", "name"],
+      "properties": {"id": {"type": "string"}, "name": {"type": "string"}, "default": {"type": "string"}}}}
+  }
+}

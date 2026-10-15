@@ -1,0 +1,1 @@
+{"uuid": "probe@gnotch.test", "name": "Gnotch test probe", "description": "Test-only: dumps notch geometry and takes screenshots over D-Bus. Never install on a real desktop.", "shell-version": ["50"]}

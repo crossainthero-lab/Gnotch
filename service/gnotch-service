@@ -1,0 +1,5 @@
+#!/bin/sh
+# Launcher used by D-Bus activation and systemd. Works from a checkout or an install prefix.
+here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m gnotch_service "$@"

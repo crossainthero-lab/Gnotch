@@ -1,0 +1,114 @@
+{
+  "id": "dev.gnotch.voice-notes",
+  "name": "Voice Notes",
+  "version": "0.1.0",
+  "description": "Record a brain dump, transcribe it (local-first), keep editable notes, and send ideas to Agent Workspace.",
+  "author": "Gnotch contributors",
+  "license": "MIT",
+  "api": "1.0",
+  "icon": "audio-input-microphone-symbolic",
+  "activation": "onDemand",
+  "entry": {
+    "backend": [
+      "python3",
+      "backend.py"
+    ]
+  },
+  "permissions": [
+    "audio.record",
+    "notifications",
+    "activities",
+    "filesystem",
+    "process.spawn",
+    "network",
+    "addons.call:dev.gnotch.agent-workspace",
+    "env:OPENAI_API_KEY"
+  ],
+  "provides": [
+    "notes.list"
+  ],
+  "settings": [
+    {
+      "key": "provider",
+      "type": "choice",
+      "label": "Transcription provider",
+      "default": "faster-whisper",
+      "choices": [
+        "faster-whisper",
+        "whisper-cli",
+        "openai-compatible"
+      ]
+    },
+    {
+      "key": "model",
+      "type": "string",
+      "label": "faster-whisper model (e.g. tiny.en, base, small)",
+      "default": "base"
+    },
+    {
+      "key": "whisper_cli_path",
+      "type": "string",
+      "label": "whisper.cpp binary (whisper-cli)",
+      "default": "whisper-cli"
+    },
+    {
+      "key": "whisper_cli_model",
+      "type": "string",
+      "label": "whisper.cpp model file (.bin)",
+      "default": ""
+    },
+    {
+      "key": "api_base_url",
+      "type": "string",
+      "label": "Cloud: API base URL",
+      "default": "https://api.openai.com/v1"
+    },
+    {
+      "key": "api_model",
+      "type": "string",
+      "label": "Cloud: model",
+      "default": "whisper-1"
+    },
+    {
+      "key": "api_key_env",
+      "type": "secret-env",
+      "label": "Cloud: name of env var holding the API key",
+      "default": "OPENAI_API_KEY"
+    },
+    {
+      "key": "api_key_file",
+      "type": "string",
+      "label": "Cloud: or path to a file containing the API key",
+      "default": ""
+    },
+    {
+      "key": "keep_audio",
+      "type": "boolean",
+      "label": "Keep audio files after transcription",
+      "default": false
+    },
+    {
+      "key": "organise_provider",
+      "type": "choice",
+      "label": "Organise with",
+      "default": "rule-based",
+      "choices": [
+        "rule-based",
+        "claude-cli"
+      ]
+    },
+    {
+      "key": "export_dir",
+      "type": "string",
+      "label": "Export folder",
+      "default": ""
+    }
+  ],
+  "shortcuts": [
+    {
+      "id": "toggle-record",
+      "name": "Start/stop recording",
+      "default": ""
+    }
+  ]
+}

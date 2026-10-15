@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.gnotch" path="/org/gnome/shell/extensions/gnotch/">
+    <key name="toggle-shortcut" type="as">
+      <default>["&lt;Control&gt;&lt;Super&gt;n"]</default>
+      <summary>Toggle the notch</summary>
+    </key>
+    <key name="position" type="s">
+      <default>"auto"</default>
+      <summary>Horizontal placement: auto (avoid the clock), center, left, right</summary>
+    </key>
+    <key name="monitor" type="i">
+      <default>-1</default>
+      <summary>Monitor index, -1 for the primary monitor</summary>
+    </key>
+    <key name="animation-intensity" type="d">
+      <range min="0.0" max="2.0"/>
+      <default>1.0</default>
+      <summary>Animation speed multiplier, 0 disables animations</summary>
+    </key>
+    <key name="appearance" type="s">
+      <default>"auto"</default>
+      <summary>auto, dark or light</summary>
+    </key>
+    <key name="expanded-width" type="i">
+      <range min="360" max="900"/>
+      <default>480</default>
+    </key>
+    <key name="expanded-height" type="i">
+      <range min="240" max="800"/>
+      <default>380</default>
+    </key>
+    <key name="default-addon" type="s">
+      <default>""</default>
+      <summary>Addon shown first when expanding without an active activity</summary>
+    </key>
+  </schema>
+</schemalist>

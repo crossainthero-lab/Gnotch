@@ -1,0 +1,19 @@
+{
+  "id": "dev.gnotch.example-clock",
+  "name": "Example: Clock & Counter",
+  "version": "1.0.0",
+  "description": "A tiny reference addon: compact clock, a counter, an addon setting, and a shortcut.",
+  "author": "Gnotch contributors",
+  "license": "MIT",
+  "api": "1.0",
+  "icon": "preferences-system-time-symbolic",
+  "activation": "onDemand",
+  "entry": { "backend": ["python3", "backend.py"] },
+  "permissions": ["storage", "notifications", "activities"],
+  "provides": ["counter.get"],
+  "settings": [
+    { "key": "show_seconds", "type": "boolean", "label": "Show seconds", "default": false },
+    { "key": "greeting", "type": "string", "label": "Greeting", "default": "Hello from an addon" }
+  ],
+  "shortcuts": [ { "id": "bump", "name": "Increment counter", "default": "" } ]
+}

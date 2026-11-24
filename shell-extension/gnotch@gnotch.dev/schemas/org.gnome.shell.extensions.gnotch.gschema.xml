@@ -1,38 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
+  <enum id="org.gnome.shell.extensions.gnotch.monitor-mode">
+    <value value="0" nick="primary"/>
+    <value value="1" nick="index"/>
+    <value value="2" nick="all"/>
+  </enum>
   <schema id="org.gnome.shell.extensions.gnotch" path="/org/gnome/shell/extensions/gnotch/">
-    <key name="toggle-shortcut" type="as">
-      <default>["&lt;Control&gt;&lt;Super&gt;n"]</default>
-      <summary>Toggle the notch</summary>
+    <!-- Panel replacement -->
+    <key name="replace-panel" type="b">
+      <default>true</default>
+      <summary>Replace the GNOME top panel</summary>
+      <description>When false the original panel is restored and the notch is hidden. Disabling the extension also restores the panel.</description>
     </key>
-    <key name="position" type="s">
-      <default>"auto"</default>
-      <summary>Horizontal placement: auto (avoid the clock), center, left, right</summary>
+    <key name="reserve-space" type="s">
+      <default>"reserve"</default>
+      <summary>Maximised windows: overlap (use the full screen height) or reserve (start below the notch)</summary>
     </key>
-    <key name="monitor" type="i">
-      <default>-1</default>
-      <summary>Monitor index, -1 for the primary monitor</summary>
-    </key>
-    <key name="animation-intensity" type="d">
-      <range min="0.0" max="2.0"/>
-      <default>1.0</default>
-      <summary>Animation speed multiplier, 0 disables animations</summary>
-    </key>
-    <key name="appearance" type="s">
-      <default>"auto"</default>
-      <summary>auto, dark or light</summary>
-    </key>
-    <key name="expanded-width" type="i">
-      <range min="360" max="900"/>
-      <default>480</default>
-    </key>
-    <key name="expanded-height" type="i">
-      <range min="240" max="800"/>
-      <default>380</default>
-    </key>
-    <key name="default-addon" type="s">
-      <default>""</default>
-      <summary>Addon shown first when expanding without an active activity</summary>
-    </key>
+
+    <!-- Geometry -->
+    <key name="notch-height" type="i"><range min="22" max="56"/><default>32</default><summary>Collapsed height in logical pixels</summary></key>
+    <key name="notch-width" type="i"><range min="0" max="600"/><default>0</default><summary>Collapsed width in logical pixels, 0 fits the clock</summary></key>
+    <key name="corner-radius" type="i"><range min="0" max="32"/><default>16</default><summary>Radius of the lower corners</summary></key>
+    <key name="position" type="s"><default>"center"</default><summary>Horizontal placement: center, left, right</summary></key>
+    <key name="offset-x" type="i"><range min="-2000" max="2000"/><default>0</default><summary>Horizontal offset in logical pixels</summary></key>
+    <key name="expanded-width" type="i"><range min="300" max="1000"/><default>360</default></key>
+    <key name="expanded-height" type="i"><range min="240" max="1000"/><default>640</default><summary>Largest height the expanded panel may reach</summary></key>
+
+    <!-- Monitors -->
+    <key name="monitor-mode" enum="org.gnome.shell.extensions.gnotch.monitor-mode"><default>"primary"</default><summary>Which monitors get a notch</summary></key>
+    <key name="monitor" type="i"><range min="-1" max="16"/><default>-1</default><summary>Monitor index when monitor-mode is index</summary></key>
+
+    <!-- Clock -->
+    <key name="clock-format" type="s"><default>"auto"</default><summary>Preset: auto, time, long, iso, custom</summary></key>
+    <key name="clock-custom-format" type="s"><default>"%a %-d %b  %H:%M"</default><summary>GLib DateTime format used when clock-format is custom</summary></key>
+    <key name="clock-hour-cycle" type="s"><default>"auto"</default><summary>auto (follow GNOME), 12h or 24h</summary></key>
+    <key name="clock-show-seconds" type="b"><default>false</default></key>
+
+    <!-- Look and feel -->
+    <key name="animation-intensity" type="d"><range min="0.0" max="2.0"/><default>1.0</default><summary>Animation speed multiplier, 0 disables animations</summary></key>
+    <key name="appearance" type="s"><default>"dark"</default><summary>dark (black notch) or light</summary></key>
+
+    <!-- Indicators and pages -->
+    <key name="indicators-order" type="as"><default>[]</default><summary>Order of embedded indicators (panel roles)</summary></key>
+    <key name="indicators-hidden" type="as"><default>[]</default><summary>Indicators that must not be embedded</summary></key>
+    <key name="discovered-indicators" type="s"><default>"[]"</default><summary>JSON list written by the shell extension for the preferences window</summary></key>
+    <key name="default-page" type="s"><default>""</default><summary>Page shown first (empty = System)</summary></key>
+
+    <key name="toggle-shortcut" type="as"><default>["&lt;Control&gt;&lt;Super&gt;n"]</default><summary>Toggle the notch</summary></key>
   </schema>
 </schemalist>

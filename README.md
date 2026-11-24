@@ -1,35 +1,45 @@
 # Gnotch
 
-An open, extensible **notch for the GNOME top bar**. Gnotch itself is just the notch and an addon platform; Voice Notes and Agent Workspace are two official addons built on the same public SDK as anything third parties write.
+A compact, MacBook-style **notch that replaces the GNOME top panel**, with an addon platform behind it. Collapsed it shows only the date and time. Click it and it grows into one small group of circular controls built from GNOME's *own live* Quick Settings, plus the indicators your other extensions already put in the panel.
 
-* Black/white/neutral, animated capsule in the top bar that expands into an interactive panel.
-* Addons are separate processes. The shell only renders declarative views, so **no addon code runs inside GNOME Shell**.
-* Works with zero addons installed. The core never depends on a specific addon.
-* No Electron, no web view. GJS for the shell, a small Python service for everything else.
+* Black notch flush with the top edge, smoothly rounded lower corners, date and time only.
+* Expanded: uniform thin-outline circular icon buttons (screenshot, settings, lock, power, sound, network, power mode, night light, dark style, do not disturb, keyboard layout, Tiling Shell, tray icons, ...). Enabled controls are white with a dark icon. Names appear on hover.
+* A simple toggle flips on click. A control with settings (network, power mode, power, sound) expands its own real GNOME menu or slider below the group, one at a time; the notch grows and shrinks with it. Esc or a click outside collapses everything.
+* Nothing is re-implemented: the real Quick Settings objects and panel indicators are moved into the notch and put back, in their original order, when Gnotch is disabled (tested, see below).
+* Addons are separate processes; the shell only renders declarative views. No addon code runs inside GNOME Shell. Works with zero addons.
 
-> **Status: 0.1 – first working release.** Targets **GNOME Shell 50** (Ubuntu 26.04). See [Verified / Not verified](#verified--not-verified) before relying on anything.
+> **Status: 0.2, Phase 1 (panel replacement) awaiting design approval.** Targets **GNOME Shell 50** (Ubuntu 26.04). Not enabled on any real desktop by this project's tests. See [Verified / Not verified](#verified--not-verified).
 
 ## Architecture in one picture
 
 ```
-GNOME Shell extension (GJS, draws the notch)  ⇄ D-Bus ⇄  gnotch-service (Python)  ⇄ stdio ⇄  addon backends (separate processes)
+GNOME Shell extension (GJS)  ⇄ D-Bus ⇄  gnotch-service (Python)  ⇄ stdio ⇄  addon backends (separate processes)
+  ├─ PanelHost      hides the stock panel (size 0, no paint) and restores it
+  ├─ ControlGroup   moves the live Quick Settings objects into one circular group
+  ├─ IndicatorHost  finds panel indicators at run time (statusArea) and moves them in
+  └─ Notch          one silhouette per monitor; expands and collapses as one actor
 ```
 
-Details: [docs/architecture.md](docs/architecture.md). Security model (read it): [docs/security.md](docs/security.md).
+Details: [docs/architecture.md](docs/architecture.md) · security model: [docs/security.md](docs/security.md) · extension compatibility: [docs/compatibility-extensions.md](docs/compatibility-extensions.md) · Phase 2 design (deferred): [docs/phase2-agent-indicators.md](docs/phase2-agent-indicators.md).
 
 ## Install (per-user, nothing system-wide)
 
+Requirements: GNOME Shell 50 (Ubuntu 26.04), `make`, `git`, `glib-compile-schemas` (package `libglib2.0-bin`), Python 3 for the service.
+
+Until this branch is merged, install the Phase 1 branch (the default branch still holds Gnotch 0.1):
+
 ```sh
-git clone https://github.com/crossainthero-lab/Gnotch && cd Gnotch
-make install                              # copies files under ~/.local, never enables anything
-gnome-extensions enable gnotch@gnotch.dev # Wayland: log out and in once for GNOME to discover it
+git clone -b feat/phase1-panel-replacement https://github.com/crossainthero-lab/Gnotch && cd Gnotch
+make install                              # copies files under ~/.local, compiles the schema, never enables anything
+# log out and in once: on Wayland GNOME only discovers a newly installed extension at login
+gnome-extensions enable gnotch@gnotch.dev
 ```
 
-Uninstall: `gnome-extensions disable gnotch@gnotch.dev && make uninstall` (your notes/tasks in `~/.local/share/gnotch/data` are kept).
+If `gsettings get org.gnome.shell disable-user-extensions` prints `true`, GNOME loads no user extension at all, including Gnotch. Set it to false first: `gsettings set org.gnome.shell disable-user-extensions false`. Check with `gnome-extensions info gnotch@gnotch.dev` after logging in again (State should be ENABLED).
 
-Open the notch by clicking it or with **Ctrl+Super+N**. `Esc` closes, `Ctrl+←/→` or a horizontal two-finger swipe on the notch switches addons. The gear opens settings: appearance, shortcut, and the **addon manager** (enable/disable, permissions, settings, reorder, install a folder or `.gnotchaddon`, uninstall).
+**Restore the original panel:** Preferences → General → turn off "Replace the GNOME top panel", or `gnome-extensions disable gnotch@gnotch.dev`. Uninstall: `make uninstall` (your addon data in `~/.local/share/gnotch/data` is kept). Nothing is persisted that could leave the panel hidden after a shell restart without Gnotch enabled.
 
-Official addons are installed *disabled*; enable them in Settings → Addons (you'll see exactly which permissions they request).
+Open the notch by clicking it or with **Ctrl+Super+N**. `Esc` closes. Preferences: date and time format, notch size and position, monitors, indicator order and on/off, extension compatibility list, animation speed, addon manager.
 
 ## Official addons
 
@@ -49,23 +59,20 @@ service/gnotch-ctl pack ./my-addon        # → .gnotchaddon
 
 ## Verified / Not verified
 
-**Verified on this machine** (Ubuntu 26.04, GNOME Shell 50.1, Wayland):
+**Verified in an isolated headless GNOME Shell 50.1 session** (private bus, private dconf, copies of the developer's real extensions: Tiling Shell, Desktop Cube, Blur my Shell, Just Perfection, User Themes, Ubuntu Dock, app indicators; `tests/shellsession.py`, `tests/realistic.py`):
 
-* Extension loads (state ACTIVE, no shell errors) in an isolated headless `gnome-shell`; notch collapses/expands/collapses with real geometry assertions (`make shell-test`); addon views render; preferences window opens.
-* Service: discovery, validation, incompatible-API rejection, permission-gated enabling, host API, cross-addon RPC, crash-restart, disable/uninstall (`tests/test_integration.py`).
-* Idle: service ≈ 33 MB RSS, an idle backend ≈ 12 MB, 0 CPU ticks over 20 s, no microphone process.
-* Voice Notes: real speech-to-text of a speech sample with faster-whisper `tiny.en`.
-* Agent Workspace: one real `claude -p` run and one real `codex exec` run reach `completed` with their true exit status.
+* Click expands, Esc collapses, an outside click collapses; sound, network, power-mode and power menus expand and fold; a simple toggle flips immediately; hover names.
+* Maximised window starts at y=32 (reserve mode) or y=0 (full-height mode); fullscreen hides the notch; one notch per monitor on 2 monitors; scales 100 % and 200 % (150 % only with the experimental scaling flag).
+* **Restore**: three enable/disable cycles return the panel, the Quick Settings order, the System buttons, the sub-menu overlays and the panel indicators exactly as GNOME had them (`tests/test_restore.py`); turning "Replace the GNOME top panel" off and on works live.
+* The notch survives a shell-theme reload (toggling Dark Style) and re-applies its styling.
+* Service, addons, manifest and Phase 2 provider unit tests (66 tests, `make test`), including real speech-to-text with faster-whisper `tiny.en`.
+* Screenshot and a 30 fps screen recording of the real compositor output: `tests/phase1_shots.py`, `tests/record.py`.
 
 **Not verified / not supported** (be sceptical of anything not listed above):
 
-* **Real microphone capture** with `pw-record` has not been exercised end to end (recorder logic is tested against a fake `pw-record`). Please test once by hand.
-* No **live transcript** while speaking; transcription runs after Stop.
-* `whisper-cli`, the OpenAI-compatible cloud provider and the `claude-cli` organiser are untested beyond parsing/not-ready paths.
-* **AgentDock** has no headless interface, so its connector reports “unavailable”. The connector interface is ready for it.
-* **Addons are not sandboxed.** `network`, `filesystem`, `process.spawn`, `audio.record` are declared-only. See [docs/security.md](docs/security.md).
-* Agent runs do not survive a reboot. Multi-monitor and HiDPI code paths exist but were only exercised on one virtual 1280×720 monitor.
-* The extension was only tested in a headless nested session; it has **not** been enabled in your live session by this project.
+* Nothing here ran on a real desktop: Wi-Fi, Bluetooth, battery, brightness, suspend and restart are absent in the test session; your shell theme, the lock screen cycle, fractional scales and Wayland multi-GPU setups were not tested.
+* The Tiling Shell icon keeps its own artwork; the keyboard indicator keeps its text. Third-party indicators that are not registered through `Main.panel.addToStatusArea()` are reported as unsupported.
+* **Addons are not sandboxed** ([docs/security.md](docs/security.md)). Real microphone capture, live transcript, `whisper-cli`, cloud providers and the `claude-cli` organiser are untested beyond parsing.
 * Targets GNOME Shell 50 only (`metadata.json`).
 
 ## Next engineering priorities

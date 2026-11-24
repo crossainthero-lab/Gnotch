@@ -24,11 +24,18 @@ Details: [docs/architecture.md](docs/architecture.md) · security model: [docs/s
 
 ## Install (per-user, nothing system-wide)
 
+Requirements: GNOME Shell 50 (Ubuntu 26.04), `make`, `git`, `glib-compile-schemas` (package `libglib2.0-bin`), Python 3 for the service.
+
+Until this branch is merged, install the Phase 1 branch (the default branch still holds Gnotch 0.1):
+
 ```sh
-git clone https://github.com/crossainthero-lab/Gnotch && cd Gnotch
-make install                              # copies files under ~/.local, never enables anything
-gnome-extensions enable gnotch@gnotch.dev # Wayland: log out and in once for GNOME to discover it
+git clone -b feat/phase1-panel-replacement https://github.com/crossainthero-lab/Gnotch && cd Gnotch
+make install                              # copies files under ~/.local, compiles the schema, never enables anything
+# log out and in once: on Wayland GNOME only discovers a newly installed extension at login
+gnome-extensions enable gnotch@gnotch.dev
 ```
+
+If `gsettings get org.gnome.shell disable-user-extensions` prints `true`, GNOME loads no user extension at all, including Gnotch. Set it to false first: `gsettings set org.gnome.shell disable-user-extensions false`. Check with `gnome-extensions info gnotch@gnotch.dev` after logging in again (State should be ENABLED).
 
 **Restore the original panel:** Preferences → General → turn off "Replace the GNOME top panel", or `gnome-extensions disable gnotch@gnotch.dev`. Uninstall: `make uninstall` (your addon data in `~/.local/share/gnotch/data` is kept). Nothing is persisted that could leave the panel hidden after a shell restart without Gnotch enabled.
 

@@ -32,8 +32,7 @@ video length equals the wall-clock length of the `with` block. Animation speed i
 - Needs `ffmpeg` with libx264 and `ffprobe` on PATH.
 - `record()` waits 0.4 s after start for the first frame, and 0.3 s before stop to flush.
 - Odd region sizes are scaled to even width/height (H.264 yuv420p).
-- Compositor frames are only produced when something changes, so the real animation resolution is
-  the shell's frame rate (typically ~60 Hz in the virtual monitor, but headless can be lower
-  under load); 30 fps sampling can skip intermediate compositor frames.
+- Compositor frames are only produced when something changes (in the 3.2 s test only ~15 of 97 output
+  frames were distinct), and 30 fps sampling can skip intermediate compositor frames.
 - Fallbacks (b) Mutter ScreenCast + gst-launch and (c) repeated Shell.Screenshot were not needed
   and are not implemented.

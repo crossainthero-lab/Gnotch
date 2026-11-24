@@ -2,20 +2,33 @@
 .gnotch {
   background-color: #000;
   color: #f2f2f2;
-  border-radius: 0 0 18px 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  border-radius: 0 0 16px 16px;
 }
-.gnotch.gnotch-expanded { border-radius: 0 0 28px 28px; box-shadow: 0 14px 40px rgba(0,0,0,0.5); }
-.gnotch.gnotch-light { background-color: #f6f6f6; color: #161616; box-shadow: 0 6px 18px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.12); border-top-width: 0; }
-.gnotch-bar { padding: 0 12px; spacing: 6px; min-height: 28px; }
-.gnotch-bar-text { font-size: 0.9em; font-weight: 600; }
-.gnotch-bar-icon { color: inherit; }
-.gnotch-dot { width: 8px; height: 8px; border-radius: 4px; background-color: #bdbdbd; }
+.gnotch.gnotch-light { background-color: #f6f6f6; color: #161616; border: 1px solid rgba(0,0,0,0.12); border-top-width: 0; }
+.gnotch-header { padding: 0 14px; }
+.gnotch-header-left, .gnotch-header-right { spacing: 4px; }
+.gnotch-center { spacing: 8px; }
+.gnotch-clock { font-size: 13px; font-weight: 600; color: inherit; }
+.gnotch-icon-button { padding: 6px; border-radius: 99px; color: rgba(255,255,255,0.6); }
+.gnotch-icon-button:hover, .gnotch-icon-button:focus { background-color: rgba(255,255,255,0.12); color: #fff; }
+.gnotch-light .gnotch-icon-button { color: rgba(0,0,0,0.55); }
+.gnotch-light .gnotch-icon-button:hover { background-color: rgba(0,0,0,0.08); color: #000; }
+.gnotch-dot { width: 7px; height: 7px; border-radius: 4px; background-color: #bdbdbd; }
 .gnotch-dot-recording { background-color: #ff453a; }
 .gnotch-dot-active { background-color: #f2f2f2; }
 .gnotch-light .gnotch-dot-active { background-color: #161616; }
 .gnotch-dot-warning { background-color: #ffd60a; }
 .gnotch-dot-error { background-color: #ff453a; }
+
+/* System page: embedded Quick Settings + indicators */
+.gnotch-system { spacing: 10px; }
+.gnotch-qs { padding: 0; }
+.gnotch-indicators { spacing: 6px; padding: 0; }
+.gnotch-indicators StIcon { icon-size: 16px; }
+.gnotch-indicators .panel-button .system-status-icon { icon-size: 16px; }
+.gnotch-indicators .panel-button { color: rgba(255,255,255,0.85); border-radius: 99px; padding: 0 6px; min-height: 28px; min-width: 28px; -natural-hover-width: 0; }
+.gnotch-indicators .panel-button:hover, .gnotch-indicators .panel-button:focus, .gnotch-indicators .panel-button:active { background-color: rgba(255,255,255,0.12); }
+.gnotch-light .gnotch-indicators .panel-button { color: rgba(0,0,0,0.8); }
 
 .gnotch-switcher { spacing: 4px; }
 .gnotch-switch { padding: 5px 9px; border-radius: 99px; color: rgba(255,255,255,0.55); }
@@ -25,12 +38,9 @@
 .gnotch-switch-active { background-color: rgba(255,255,255,0.16); color: #fff; }
 .gnotch-light .gnotch-switch-active { background-color: rgba(0,0,0,0.1); color: #000; }
 .gnotch-switch-busy { border-bottom: 2px solid #ff453a; }
-.gnotch-gear { padding: 5px; border-radius: 99px; color: rgba(255,255,255,0.55); }
-.gnotch-gear:hover { background-color: rgba(255,255,255,0.1); }
-.gnotch-light .gnotch-gear { color: rgba(0,0,0,0.5); }
 
 .gnotch-body { padding: 0 8px 4px 8px; }
-.gnotch-body-box { padding: 6px 10px 14px 10px; spacing: 8px; }
+.gnotch-body-box { padding: 6px 10px 10px 10px; spacing: 8px; }
 .gnotch-label { color: inherit; }
 .gnotch-title { font-size: 1.25em; font-weight: 700; }
 .gnotch-body { font-size: 1em; }
@@ -79,3 +89,70 @@
 .gnotch-light .gnotch-row-subtitle { color: rgba(0,0,0,0.55); }
 .gnotch-badge { font-size: 0.8em; padding: 1px 8px; border-radius: 99px; background-color: rgba(255,255,255,0.14); }
 .gnotch-light .gnotch-badge { background-color: rgba(0,0,0,0.1); }
+
+/* ---- Quick Settings as icon tiles (Apple-style: quiet glass, white = on) ---------------------- */
+.gnotch .gnotch-tiles { spacing-rows: 10px; spacing-columns: 10px; }
+
+.gnotch .gnotch-tile {
+  min-width: 0 !important; max-width: 4000px !important; min-height: 52px; border-radius: 16px !important; padding: 0 !important;
+  background-color: rgba(255,255,255,0.10) !important; color: #f2f2f2 !important; box-shadow: none !important; border: none !important;
+}
+.gnotch .gnotch-tile:hover { background-color: rgba(255,255,255,0.17) !important; }
+.gnotch .gnotch-tile:active { background-color: rgba(255,255,255,0.24) !important; }
+.gnotch .gnotch-tile:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55) !important; }
+.gnotch .gnotch-tile:checked { background-color: #f2f2f2 !important; color: #0a0a0a !important; }
+.gnotch .gnotch-tile:checked:hover { background-color: #ffffff !important; }
+.gnotch .gnotch-tile:checked:focus { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.45) !important; }
+.gnotch .gnotch-tile-inner.gnotch-tile-inner.gnotch-tile-inner.gnotch-tile-inner {
+  /* St ignores !important; five class selectors out-rank every theme state rule (:focus:hover:checked etc.) */
+  background-color: rgba(0,0,0,0.01) !important; box-shadow: none !important; border: none !important; color: inherit !important;
+  min-width: 0 !important; max-width: 4000px !important; padding: 0 !important; border-radius: 16px !important;
+}
+.gnotch .gnotch-tile .quick-toggle-icon { icon-size: 22px; }
+.gnotch .gnotch-tile > StBoxLayout, .gnotch .gnotch-tile-inner > StBoxLayout { padding: 0 !important; spacing: 0 !important; }
+
+/* menu that opens under a tile */
+.gnotch .quick-toggle-menu {
+  background-color: rgba(255,255,255,0.08) !important; border-radius: 16px; padding: 6px; color: #f2f2f2; box-shadow: none; border: none;
+}
+.gnotch .quick-toggle-menu .header { padding: 8px 10px 10px 10px; spacing-rows: 0; spacing-columns: 10px; }
+.gnotch .quick-toggle-menu .header .icon { icon-size: 20px; padding: 8px; border-radius: 99px; background-color: rgba(255,255,255,0.12); color: #f2f2f2; }
+.gnotch .quick-toggle-menu .header .icon.active { background-color: #f2f2f2; color: #0a0a0a; }
+.gnotch .quick-toggle-menu .header .title { font-weight: 600; font-size: 14px; }
+.gnotch .quick-toggle-menu .header .subtitle { color: rgba(255,255,255,0.6); font-size: 12px; }
+.gnotch .gnotch-header-switch { padding: 4px; border-radius: 99px; }
+.gnotch .gnotch-header-switch:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55); }
+.gnotch .quick-toggle-menu .popup-menu-item { border-radius: 10px; color: #f2f2f2; }
+.gnotch .quick-toggle-menu .popup-menu-item:hover, .gnotch .quick-toggle-menu .popup-menu-item:focus { background-color: rgba(255,255,255,0.12); }
+.gnotch .quick-toggle-menu .popup-menu-item:active { background-color: rgba(255,255,255,0.2); }
+.gnotch .quick-toggle-menu .popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(255,255,255,0.12); }
+.gnotch .quick-toggle-menu .popup-subtitle-menu-item { color: rgba(255,255,255,0.6); }
+
+/* switches: monochrome */
+.gnotch .toggle-switch { background-color: rgba(255,255,255,0.22) !important; border-radius: 99px; }
+.gnotch .toggle-switch:checked { background-color: #f2f2f2 !important; }
+
+/* sliders: thick rounded track, white fill, no separate handle */
+.gnotch .gnotch-slider { padding: 0; }
+.gnotch .gnotch-slider .icon-button { color: #f2f2f2; background-color: rgba(0,0,0,0.01) !important; padding: 6px; border-radius: 99px; }
+.gnotch .gnotch-slider .icon-button:hover { background-color: rgba(255,255,255,0.12) !important; }
+.gnotch .gnotch-slider StIcon { icon-size: 20px; }
+.gnotch .gnotch-slider .slider {
+  -barlevel-height: 22px !important; -barlevel-background-color: rgba(255,255,255,0.14) !important;
+  -barlevel-active-background-color: #f2f2f2 !important; -barlevel-overdrive-color: #f2f2f2 !important;
+  -slider-handle-radius: 11px !important; color: #f2f2f2 !important;
+}
+.gnotch .gnotch-slider .slider-bin { padding: 0 6px; }
+.gnotch .gnotch-slider .slider-bin:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); border-radius: 99px; }
+
+/* top row: screenshot, settings, lock, power, battery */
+.gnotch .gnotch-system-row .icon-button, .gnotch .gnotch-system-row .button {
+  background-color: rgba(255,255,255,0.10) !important; color: #f2f2f2 !important; border: none !important; box-shadow: none !important;
+}
+.gnotch .gnotch-system-row .icon-button:hover, .gnotch .gnotch-system-row .button:hover { background-color: rgba(255,255,255,0.18) !important; }
+.gnotch .gnotch-system-row .icon-button:checked { background-color: #f2f2f2 !important; color: #0a0a0a !important; }
+.gnotch .gnotch-system-row .icon-button:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55) !important; }
+.gnotch .gnotch-system-row StIcon { icon-size: 18px; }
+
+/* hover name (lives in the top layer, outside .gnotch) */
+.gnotch-tooltip { background-color: rgba(28,28,28,0.97); color: #f2f2f2; font-size: 12px; font-weight: 500; padding: 4px 9px; border-radius: 8px; }

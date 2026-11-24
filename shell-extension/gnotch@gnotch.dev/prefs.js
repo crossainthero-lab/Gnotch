@@ -5,6 +5,8 @@ import Gtk from 'gi://Gtk';
 
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import {GnotchClient} from './client.js';
+import {loadCompat} from './compat.js';
+import {generalPage, monitorsPage, indicatorsPage} from './prefsPages.js';
 
 // Adw row titles/subtitles are Pango markup; addon-supplied text must never be interpreted as markup.
 const esc = t => GLib.markup_escape_text(String(t ?? ''), -1);
@@ -14,10 +16,12 @@ export default class GnotchPrefs extends ExtensionPreferences {
         const settings = this.getSettings();
         const client = new GnotchClient();
         window._gnotchClient = client;
-        window.set_default_size(720, 760);
+        window.set_default_size(720, 780);
         window.connect('close-request', () => { client.destroy(); return false; });
 
-        window.add(this._generalPage(settings));
+        window.add(generalPage(settings));
+        window.add(monitorsPage(settings));
+        window.add(indicatorsPage(settings, loadCompat(this.path)));
         const addons = new Adw.PreferencesPage({title: 'Addons', icon_name: 'application-x-addon-symbolic'});
         window.add(addons);
 
@@ -33,7 +37,7 @@ export default class GnotchPrefs extends ExtensionPreferences {
             }
             if (state.group) addons.remove(state.group);
             state.group = new Adw.PreferencesGroup({title: 'Installed addons',
-                description: 'Order here is the order in the notch switcher.'});
+                description: 'Order here is the order of the page switcher in the notch.'});
             const install = new Gtk.Button({label: 'Install…', valign: Gtk.Align.CENTER, css_classes: ['suggested-action']});
             install.connect('clicked', () => this._install(window, client));
             state.group.set_header_suffix(install);
@@ -46,54 +50,6 @@ export default class GnotchPrefs extends ExtensionPreferences {
         client.on('StateChanged', rebuild);
         client.on('Availability', ok => { if (!ok) rebuild(); });
         client.connect();
-    }
-
-    _generalPage(settings) {
-        const page = new Adw.PreferencesPage({title: 'General', icon_name: 'preferences-system-symbolic'});
-        const g = new Adw.PreferencesGroup({title: 'Appearance'});
-        page.add(g);
-
-        const choice = (title, key, values, labels) => {
-            const row = new Adw.ComboRow({title, model: Gtk.StringList.new(labels)});
-            row.selected = Math.max(0, values.indexOf(settings.get_string(key)));
-            row.connect('notify::selected', () => settings.set_string(key, values[row.selected]));
-            return row;
-        };
-        g.add(choice('Placement', 'position', ['auto', 'center', 'left', 'right'],
-            ['Automatic (avoid the clock)', 'Centre', 'Left', 'Right']));
-        g.add(choice('Theme', 'appearance', ['dark', 'light'], ['Black (default)', 'Light']));
-
-        const anim = new Adw.SpinRow({title: 'Animation intensity', subtitle: '0 disables animations',
-            adjustment: new Gtk.Adjustment({lower: 0, upper: 2, step_increment: 0.1, value: settings.get_double('animation-intensity')}), digits: 1});
-        anim.connect('notify::value', () => settings.set_double('animation-intensity', anim.value));
-        g.add(anim);
-        const spin = (title, key, lo, hi) => {
-            const r = new Adw.SpinRow({title, adjustment: new Gtk.Adjustment({lower: lo, upper: hi, step_increment: 20, value: settings.get_int(key)})});
-            r.connect('notify::value', () => settings.set_int(key, r.value));
-            return r;
-        };
-        g.add(spin('Expanded width', 'expanded-width', 360, 900));
-        g.add(spin('Expanded height', 'expanded-height', 240, 800));
-        const mon = new Adw.SpinRow({title: 'Monitor', subtitle: '-1 = primary monitor',
-            adjustment: new Gtk.Adjustment({lower: -1, upper: 8, step_increment: 1, value: settings.get_int('monitor')})});
-        mon.connect('notify::value', () => settings.set_int('monitor', mon.value));
-        g.add(mon);
-
-        const k = new Adw.PreferencesGroup({title: 'Keyboard'});
-        page.add(k);
-        const sc = new Adw.EntryRow({title: esc('Toggle notch (e.g. <Control><Super>n)'), text: settings.get_strv('toggle-shortcut')[0] ?? ''});
-        sc.show_apply_button = true;
-        sc.connect('apply', () => {
-            const t = sc.text.trim();
-            const [ok] = Gtk.accelerator_parse(t);
-            if (t === '' || ok) { settings.set_strv('toggle-shortcut', t ? [t] : []); sc.remove_css_class('error'); }
-            else sc.add_css_class('error');
-        });
-        k.add(sc);
-        const hint = new Adw.PreferencesGroup({description:
-            'Inside the notch: Esc closes, Ctrl+←/→ (or two-finger horizontal swipe on the notch) switches addons.'});
-        page.add(hint);
-        return page;
     }
 
     _addonRow(window, client, a, index, ids) {

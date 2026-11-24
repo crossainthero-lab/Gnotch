@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "_doc": "Compatibility knowledge for panel indicators. Gnotch discovers indicators at run time from Main.panel.statusArea; this file only adds human names, the owning extension and an honest status. Anything not matched here is still tried generically and shown as 'unidentified'. Edit via docs/compatibility-extensions.md.",
+  "replaced": {
+    "dateMenu": "Replaced by the notch clock.",
+    "activities": "Not shown. Press Super to open the Overview.",
+    "quickSettings": "Its real menu is embedded in the expanded notch (System page)."
+  },
+  "roles": [
+    {"match": "^keyboard$", "name": "Keyboard layout", "owner": "GNOME Shell"},
+    {"match": "^a11y$", "name": "Accessibility", "owner": "GNOME Shell"},
+    {"match": "^dwellClick$", "name": "Dwell click", "owner": "GNOME Shell"},
+    {"match": "^screenRecording$", "name": "Screen recording", "owner": "GNOME Shell"},
+    {"match": "^screenSharing$", "name": "Screen sharing", "owner": "GNOME Shell"},
+    {"match": "^appindicator-", "name": "Tray icon", "owner": "ubuntu-appindicators@ubuntu.com"},
+    {"match": "^tilingshell", "name": "Tiling Shell", "owner": "tilingshell@ferrarodomenico.com"}
+  ],
+  "extensions": {
+    "tilingshell@ferrarodomenico.com": {"status": "supported", "note": "Panel indicator is embedded in the notch and keeps its own menu."},
+    "ubuntu-appindicators@ubuntu.com": {"status": "supported", "note": "Tray icons are embedded as they appear."},
+    "ubuntu-dock@ubuntu.com": {"status": "not-applicable", "note": "Has no panel indicator. Independent of the panel."},
+    "desktop-cube@schneegans.github.com": {"status": "not-applicable", "note": "Has no panel indicator."},
+    "just-perfection-desktop@just-perfection": {"status": "partial", "note": "Panel visibility options of Just Perfection are overridden while Gnotch is active; Gnotch restores the panel when disabled."},
+    "blur-my-shell@aunetx": {"status": "partial", "note": "Panel blur applies to the hidden panel and has no effect on the notch."},
+    "user-theme@gnome-shell-extensions.gcampax.github.com": {"status": "not-applicable", "note": "Shell theme; the notch uses its own black surface."},
+    "vertical-workspaces@G-dH.github.com": {"status": "untested", "note": "Replaces the Overview and parts of the panel; not enabled on the development machine, so not verified."}
+  }
+}

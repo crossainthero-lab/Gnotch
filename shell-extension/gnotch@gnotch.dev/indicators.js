@@ -50,6 +50,9 @@ export class IndicatorHost {
     }
 
     sync() {
+        // original positions come from a snapshot taken before anything is moved
+        for (const box of [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox])
+            box.get_children().forEach((c, i) => { if (c._gnOrigIndex === undefined) c._gnOrigIndex = i; });
         const area = Main.panel.statusArea;
         const hidden = new Set(this._settings.get_strv('indicators-hidden'));
         const report = [];
@@ -96,7 +99,7 @@ export class IndicatorHost {
         const container = ind.container;
         if (cur && cur.container === container && container.get_parent() === this._target) return;
         const parent = container.get_parent();
-        const index = parent ? parent.get_children().indexOf(container) : -1;
+        const index = container._gnOrigIndex ?? (parent ? parent.get_children().indexOf(container) : -1);
         if (parent) parent.remove_child(container);
         container._gnRank = 3;
         const orig = {xe: ind.x_expand, ye: ind.y_expand, xa: ind.x_align, ya: ind.y_align};
@@ -145,6 +148,7 @@ export class IndicatorHost {
     _putBack(it) {
         const {container, parent, index} = it;
         it.ind.remove_style_class_name('gnotch-circle');
+        it.container._gnOrigIndex = undefined;
         it.container.set_size(-1, -1);
         it.container.show();
         it.ind.set({x_expand: it.orig.xe, y_expand: it.orig.ye, x_align: it.orig.xa, y_align: it.orig.ya});
@@ -167,6 +171,8 @@ export class IndicatorHost {
         for (const [o, id] of this._boxSignals) o.disconnect(id);
         this._boxSignals = [];
         this._settings.disconnect(this._settingsId);
-        for (const role of [...this._items.keys()]) this._release(role);
+        // put everything back in the panel's original order
+        const roles = [...this._items.entries()].sort((a, b) => a[1].index - b[1].index).map(([r]) => r);
+        for (const role of roles) this._release(role);
     }
 }

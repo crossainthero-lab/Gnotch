@@ -30,7 +30,7 @@ def _bytes(s):
 
 class Session:
     def __init__(self, monitors=('1920x1080',), copy_extensions=(), enable_extensions=(), dconf=None,
-                 gnotch=True, user_dconf_paths=(), keep=False, audio=True):
+                 gnotch=True, user_dconf_paths=(), keep=False, audio=True, enable_gnotch=True):
         self.monitors = list(monitors)
         self.copy_extensions = list(copy_extensions)
         self.enable_extensions = list(enable_extensions)
@@ -39,6 +39,7 @@ class Session:
         self.user_dconf_paths = list(user_dconf_paths)
         self.keep = keep
         self.audio = audio
+        self.enable_gnotch = enable_gnotch
         self.procs = []
         self.apps = []
         self.base = tempfile.mkdtemp(prefix='gnt-', dir=f'/run/user/{os.getuid()}')
@@ -77,7 +78,7 @@ class Session:
             dump = subprocess.run(['dconf', 'dump', path], capture_output=True, text=True,
                                   env={k: v for k, v in os.environ.items() if k != 'XDG_CONFIG_HOME'}).stdout
             subprocess.run(['dconf', 'load', path], input=dump, text=True, env=self.env, check=True)
-        enabled = self.enable_extensions + ([UUID] if self.gnotch else []) + [PROBE]   # Gnotch last, like a freshly enabled extension
+        enabled = self.enable_extensions + ([UUID] if (self.gnotch and self.enable_gnotch) else []) + [PROBE]   # Gnotch last, like a freshly enabled extension
         self.dconf['/org/gnome/shell/enabled-extensions'] = '[' + ','.join(f"'{e}'" for e in enabled) + ']'
         self.dconf.setdefault('/org/gnome/shell/disable-user-extensions', 'false')
         for k, v in self.dconf.items():

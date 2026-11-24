@@ -117,8 +117,15 @@ export class ControlGroup {
         this._idle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => { this._idle = 0; this._sync(); return GLib.SOURCE_REMOVE; });
     }
 
+    // Original positions are recorded from a full snapshot before anything is removed, so the
+    // objects can be put back in GNOME's exact order.
+    _snapshot(parent) {
+        parent.get_children().forEach((c, i) => { if (c._gnOrigIndex === undefined) c._gnOrigIndex = i; });
+    }
+
     _sync() {
-        for (const item of this._grid.get_children()) {
+        this._snapshot(this._grid);
+        for (const item of [...this._grid.get_children()]) {
             if (this._adopted.has(item)) continue;
             if (item.powerToggle) this._adoptSystem(item);
             else if (item instanceof QuickMenuToggle) this._adoptToggle(item, true);
@@ -132,7 +139,7 @@ export class ControlGroup {
     // visible AND has something to draw (backends often show a toggle before they know its state).
     _take(item, rank, iconOf = null) {
         const parent = item.get_parent();
-        this._adopted.set(item, {parent, index: parent ? parent.get_children().indexOf(item) : -1});
+        this._adopted.set(item, {parent, index: item._gnOrigIndex ?? (parent ? parent.get_children().indexOf(item) : -1)});
         parent?.remove_child(item);
         const cell = new St.Bin({style_class: 'gnotch-cell', child: item});
         cell._gnRank = rank;
@@ -157,6 +164,7 @@ export class ControlGroup {
 
     _adoptSystem(sysItem) {
         this._adopted.set(sysItem, {parent: null, index: -1});      // the (now empty) shell stays in the grid
+        this._snapshot(sysItem.child);
         for (const c of [...sysItem.child.get_children()]) {
             if (c instanceof QuickMenuToggle) this._adoptToggle(c, true, sysItem.child);
             else if (c instanceof QuickToggle) this._adoptToggle(c, false, sysItem.child);
@@ -305,7 +313,7 @@ export class ControlGroup {
 
     // ---- sliders: a circle that reveals the real slider --------------------------------------------
     _adoptSlider(item) {
-        this._adopted.set(item, {parent: item.get_parent(), index: item.get_parent().get_children().indexOf(item)});
+        this._adopted.set(item, {parent: item.get_parent(), index: item._gnOrigIndex ?? item.get_parent().get_children().indexOf(item)});
         item.get_parent().remove_child(item);
         item.visible && 0;
         const circle = new St.Button({style_class: 'icon-button gnotch-circle', can_focus: true, accessible_name: SLIDER_NAMES[item.constructor.name] ?? 'Slider',
@@ -316,7 +324,10 @@ export class ControlGroup {
         circle._gnCell = cell;
         const rec = {item, circle, open: false, shown: item.visible};
         cell.visible = item.visible;
+        item._gnWanted = item.visible;       // what GNOME/the extension wants; restored on destroy
+        item._gnRevealing = true;
         item.hide();
+        item._gnRevealing = false;
         item.add_style_class_name('gnotch-slider');
         item._gnShell = true;
         this.slot.add_child(item);
@@ -330,8 +341,9 @@ export class ControlGroup {
             [item, item.connect('notify::visible', () => {
                 if (item._gnRevealing) return;
                 const want = item.visible;
-                if (want && !rec.open) { cell.visible = true; item.hide(); }   // extension showed it: show the circle only
-                else if (!want && !rec.open) cell.visible = false;
+                item._gnWanted = want;
+                if (want && !rec.open) { cell.visible = true; item._gnRevealing = true; item.hide(); item._gnRevealing = false; }   // show the circle only
+                else if (!want) { cell.visible = false; if (rec.open) this._setSlider(rec, false); }
             })],
             [item, item.connect('notify::icon-name', syncIcon)],
             [item, item.connect('notify::gicon', syncIcon)],
@@ -430,8 +442,9 @@ export class ControlGroup {
             if (cell) { cell.destroy(); item._gnCell = null; }
             item.opacity = 255;
             item._gnRank = undefined;
+            item._gnOrigIndex = undefined;
             parent.insert_child_at_index(item, Math.min(Math.max(index, 0), parent.get_n_children()));
-            if (item._gnShell) item.show();
+            if (item._gnShell) { item.visible = item._gnWanted ?? true; item._gnShell = false; }
         }
         this._adopted.clear();
         this._tooltip.destroy();

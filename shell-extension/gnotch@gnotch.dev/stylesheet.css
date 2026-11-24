@@ -22,13 +22,6 @@
 
 /* System page: embedded Quick Settings + indicators */
 .gnotch-system { spacing: 10px; }
-.gnotch-qs { padding: 0; }
-.gnotch-indicators { spacing: 6px; padding: 0; }
-.gnotch-indicators StIcon { icon-size: 16px; }
-.gnotch-indicators .panel-button .system-status-icon { icon-size: 16px; }
-.gnotch-indicators .panel-button { color: rgba(255,255,255,0.85); border-radius: 99px; padding: 0 6px; min-height: 28px; min-width: 28px; -natural-hover-width: 0; }
-.gnotch-indicators .panel-button:hover, .gnotch-indicators .panel-button:focus, .gnotch-indicators .panel-button:active { background-color: rgba(255,255,255,0.12); }
-.gnotch-light .gnotch-indicators .panel-button { color: rgba(0,0,0,0.8); }
 
 .gnotch-switcher { spacing: 4px; }
 .gnotch-switch { padding: 5px 9px; border-radius: 99px; color: rgba(255,255,255,0.55); }
@@ -39,8 +32,8 @@
 .gnotch-light .gnotch-switch-active { background-color: rgba(0,0,0,0.1); color: #000; }
 .gnotch-switch-busy { border-bottom: 2px solid #ff453a; }
 
-.gnotch-body { padding: 0 8px 4px 8px; }
-.gnotch-body-box { padding: 6px 10px 10px 10px; spacing: 8px; }
+.gnotch-body { padding: 0; }
+.gnotch-body-box { padding: 4px 14px 14px 14px; spacing: 8px; }
 .gnotch-label { color: inherit; }
 .gnotch-title { font-size: 1.25em; font-weight: 700; }
 .gnotch-body { font-size: 1em; }
@@ -90,69 +83,69 @@
 .gnotch-badge { font-size: 0.8em; padding: 1px 8px; border-radius: 99px; background-color: rgba(255,255,255,0.14); }
 .gnotch-light .gnotch-badge { background-color: rgba(0,0,0,0.1); }
 
-/* ---- Quick Settings as icon tiles (Apple-style: quiet glass, white = on) ---------------------- */
-.gnotch .gnotch-tiles { spacing-rows: 10px; spacing-columns: 10px; }
+/* ---- Controls: ONE group of uniform circles (live GNOME objects, restyled) ------------------------ */
+/* St ignores !important and the theme has long state selectors (:focus:hover:checked), so the key rules
+   repeat the class to out-rank them. */
+.gnotch .gnotch-controls { spacing: 10px; }
+.gnotch .gnotch-cell { padding: 0; }
+.gnotch .gnotch-system { padding: 0; }
 
-.gnotch .gnotch-tile {
-  min-width: 0 !important; max-width: 4000px !important; min-height: 52px; border-radius: 16px !important; padding: 0 !important;
-  background-color: rgba(255,255,255,0.10) !important; color: #f2f2f2 !important; box-shadow: none !important; border: none !important;
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle {
+  min-width: 38px; max-width: 38px; min-height: 38px; max-height: 38px; padding: 0; border: none; border-radius: 19px;
+  background-color: rgba(255,255,255,0.10); color: #f2f2f2; box-shadow: none; font-size: 12px; font-weight: 600;
 }
-.gnotch .gnotch-tile:hover { background-color: rgba(255,255,255,0.17) !important; }
-.gnotch .gnotch-tile:active { background-color: rgba(255,255,255,0.24) !important; }
-.gnotch .gnotch-tile:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55) !important; }
-.gnotch .gnotch-tile:checked { background-color: #f2f2f2 !important; color: #0a0a0a !important; }
-.gnotch .gnotch-tile:checked:hover { background-color: #ffffff !important; }
-.gnotch .gnotch-tile:checked:focus { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.45) !important; }
-.gnotch .gnotch-tile-inner.gnotch-tile-inner.gnotch-tile-inner.gnotch-tile-inner {
-  /* St ignores !important; five class selectors out-rank every theme state rule (:focus:hover:checked etc.) */
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:hover { background-color: rgba(255,255,255,0.18); }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:active { background-color: rgba(255,255,255,0.26); }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:checked { background-color: #f2f2f2; color: #0a0a0a; }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:checked:hover { background-color: #ffffff; }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6); }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:checked:focus { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.5); }
+/* the control whose settings are open */
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle.gnotch-open { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.75); }
+.gnotch .gnotch-circle.gnotch-circle.gnotch-circle.gnotch-circle:checked.gnotch-open { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.55); }
+.gnotch .gnotch-circle StIcon { icon-size: 18px; }
+.gnotch .gnotch-circle .quick-toggle-icon { icon-size: 18px; }
+.gnotch .gnotch-circle > StBoxLayout, .gnotch .gnotch-circle-inner > StBoxLayout { padding: 0; spacing: 0; }
+
+/* the split-button inside menu toggles is flattened into the circle */
+.gnotch .gnotch-circle-inner.gnotch-circle-inner.gnotch-circle-inner.gnotch-circle-inner {
   background-color: rgba(0,0,0,0.01) !important; box-shadow: none !important; border: none !important; color: inherit !important;
-  min-width: 0 !important; max-width: 4000px !important; padding: 0 !important; border-radius: 16px !important;
+  min-width: 0 !important; max-width: 4000px !important; padding: 0 !important; border-radius: 19px !important;
 }
-.gnotch .gnotch-tile .quick-toggle-icon { icon-size: 22px; }
-.gnotch .gnotch-tile > StBoxLayout, .gnotch .gnotch-tile-inner > StBoxLayout { padding: 0 !important; spacing: 0 !important; }
 
-/* menu that opens under a tile */
-.gnotch .quick-toggle-menu {
-  background-color: rgba(255,255,255,0.08) !important; border-radius: 16px; padding: 6px; color: #f2f2f2; box-shadow: none; border: none;
-}
-.gnotch .quick-toggle-menu .header { padding: 8px 10px 10px 10px; spacing-rows: 0; spacing-columns: 10px; }
-.gnotch .quick-toggle-menu .header .icon { icon-size: 20px; padding: 8px; border-radius: 99px; background-color: rgba(255,255,255,0.12); color: #f2f2f2; }
-.gnotch .quick-toggle-menu .header .icon.active { background-color: #f2f2f2; color: #0a0a0a; }
-.gnotch .quick-toggle-menu .header .title { font-weight: 600; font-size: 14px; }
+/* the expansion area: the control's own real menu / slider, directly on the notch surface */
+.gnotch .gnotch-slot { spacing: 0; }
+.gnotch .quick-toggle-menu-container { }
+.gnotch .quick-toggle-menu { background-color: rgba(0,0,0,0); border-radius: 0; padding: 2px 4px 0 4px; color: #f2f2f2; box-shadow: none; border: none; }
+.gnotch .quick-toggle-menu .header { padding: 8px 6px 6px 6px; spacing-rows: 0; spacing-columns: 10px; }
+.gnotch .quick-toggle-menu .header .title { font-weight: 600; font-size: 13px; }
 .gnotch .quick-toggle-menu .header .subtitle { color: rgba(255,255,255,0.6); font-size: 12px; }
+.gnotch .quick-toggle-menu .header .icon { icon-size: 18px; padding: 8px; border-radius: 99px; background-color: rgba(255,255,255,0.12); color: #f2f2f2; }
+.gnotch .quick-toggle-menu .header .icon.active { background-color: #f2f2f2; color: #0a0a0a; }
 .gnotch .gnotch-header-switch { padding: 4px; border-radius: 99px; }
 .gnotch .gnotch-header-switch:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55); }
-.gnotch .quick-toggle-menu .popup-menu-item { border-radius: 10px; color: #f2f2f2; }
+.gnotch .quick-toggle-menu .popup-menu-item { border-radius: 10px; color: #f2f2f2; padding: 7px 10px; }
 .gnotch .quick-toggle-menu .popup-menu-item:hover, .gnotch .quick-toggle-menu .popup-menu-item:focus { background-color: rgba(255,255,255,0.12); }
 .gnotch .quick-toggle-menu .popup-menu-item:active { background-color: rgba(255,255,255,0.2); }
-.gnotch .quick-toggle-menu .popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(255,255,255,0.12); }
+.gnotch .quick-toggle-menu .popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(255,255,255,0.10); }
 .gnotch .quick-toggle-menu .popup-subtitle-menu-item { color: rgba(255,255,255,0.6); }
+.gnotch .quick-toggle-menu .popup-menu-icon, .gnotch .quick-toggle-menu StIcon { icon-size: 16px; }
 
 /* switches: monochrome */
-.gnotch .toggle-switch { background-color: rgba(255,255,255,0.22) !important; border-radius: 99px; }
-.gnotch .toggle-switch:checked { background-color: #f2f2f2 !important; }
+.gnotch .toggle-switch { background-color: rgba(255,255,255,0.22); border-radius: 99px; }
+.gnotch .toggle-switch:checked { background-color: #f2f2f2; }
 
-/* sliders: thick rounded track, white fill, no separate handle */
-.gnotch .gnotch-slider { padding: 0; }
-.gnotch .gnotch-slider .icon-button { color: #f2f2f2; background-color: rgba(0,0,0,0.01) !important; padding: 6px; border-radius: 99px; }
-.gnotch .gnotch-slider .icon-button:hover { background-color: rgba(255,255,255,0.12) !important; }
-.gnotch .gnotch-slider StIcon { icon-size: 20px; }
+/* revealed slider: thick rounded white pill, icon at the left */
+.gnotch .gnotch-slider { padding: 4px 0 0 0; }
+.gnotch .gnotch-slider .icon-button { color: #f2f2f2; background-color: rgba(0,0,0,0.01); padding: 6px; border-radius: 99px; }
+.gnotch .gnotch-slider .icon-button:hover { background-color: rgba(255,255,255,0.12); }
+.gnotch .gnotch-slider StIcon { icon-size: 18px; }
 .gnotch .gnotch-slider .slider {
-  -barlevel-height: 22px !important; -barlevel-background-color: rgba(255,255,255,0.14) !important;
-  -barlevel-active-background-color: #f2f2f2 !important; -barlevel-overdrive-color: #f2f2f2 !important;
-  -slider-handle-radius: 11px !important; color: #f2f2f2 !important;
+  -barlevel-height: 22px; -barlevel-background-color: rgba(255,255,255,0.14);
+  -barlevel-active-background-color: #f2f2f2; -barlevel-overdrive-color: #f2f2f2; -slider-handle-radius: 11px; color: #f2f2f2;
 }
 .gnotch .gnotch-slider .slider-bin { padding: 0 6px; }
 .gnotch .gnotch-slider .slider-bin:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); border-radius: 99px; }
-
-/* top row: screenshot, settings, lock, power, battery */
-.gnotch .gnotch-system-row .icon-button, .gnotch .gnotch-system-row .button {
-  background-color: rgba(255,255,255,0.10) !important; color: #f2f2f2 !important; border: none !important; box-shadow: none !important;
-}
-.gnotch .gnotch-system-row .icon-button:hover, .gnotch .gnotch-system-row .button:hover { background-color: rgba(255,255,255,0.18) !important; }
-.gnotch .gnotch-system-row .icon-button:checked { background-color: #f2f2f2 !important; color: #0a0a0a !important; }
-.gnotch .gnotch-system-row .icon-button:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55) !important; }
-.gnotch .gnotch-system-row StIcon { icon-size: 18px; }
 
 /* hover name (lives in the top layer, outside .gnotch) */
 .gnotch-tooltip { background-color: rgba(28,28,28,0.97); color: #f2f2f2; font-size: 12px; font-weight: 500; padding: 4px 9px; border-radius: 8px; }

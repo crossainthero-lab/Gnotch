@@ -79,10 +79,8 @@ export function generalPage(settings) {
     size.add(spin(settings, 'Corner radius', 'corner-radius', 0, 32));
     size.add(combo(settings, 'Position', 'position', ['center', 'left', 'right'], ['Centre', 'Left', 'Right']));
     size.add(spin(settings, 'Horizontal offset', 'offset-x', -2000, 2000, 10));
-    size.add(spin(settings, 'Expanded width', 'expanded-width', 400, 1000, 20));
+    size.add(spin(settings, 'Expanded width', 'expanded-width', 300, 1000, 20));
     size.add(spin(settings, 'Expanded maximum height', 'expanded-height', 240, 1000, 20));
-    size.add(toggle(settings, 'Quick Settings as icon tiles', 'qs-icon-tiles', 'Names appear on hover, settings on click. Off shows GNOME’s stock tiles.'));
-    size.add(spin(settings, 'Quick Settings columns', 'qs-columns', 0, 6, 1, '0 chooses automatically.'));
     page.add(size);
 
     const look = new Adw.PreferencesGroup({title: 'Behaviour'});

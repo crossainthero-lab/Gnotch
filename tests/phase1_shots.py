@@ -59,7 +59,12 @@ def scenario_desktop(out):
         print('shell errors:', s.shell_errors())
 
 
-GRID = "Main.panel.statusArea.quickSettings.menu._grid"
+GROUP = "Main.extensionManager.lookup('gnotch@gnotch.dev').stateObj._ctrl.systemPage.group"
+
+
+def circle_js(name):
+    return (f"{GROUP}.flow.get_children().filter(c => c.visible).map(c => c.get_first_child())"
+            f".find(a => a && (a.title === {name!r} || a.accessible_name === {name!r}))")
 
 
 def center(s, js):
@@ -72,19 +77,42 @@ def scenario_system(out):
         calm(s)
         s.click(960, 10); time.sleep(1.4)
         print('notch', s.notch())
-        s.shot(f'{out}/03a-system-controls.png')
-        dark = center(s, f"{GRID}.get_children().find(c => c.title === 'Dark Style')")
-        s.move(*dark); time.sleep(1.0)
-        s.shot(f'{out}/03d-hover-name.png')
-        # a menu tile: click opens GNOME's own menu with name + settings
-        wired = center(s, f"{GRID}.get_children().find(c => c.title === 'Wired')")
+        s.shot(f'{out}/02-expanded.png')
+        print('circles:', s.eval(f"return {GROUP}.flow.get_children().filter(c => c.visible).map(c => (c.get_first_child().title ?? c.get_first_child().accessible_name ?? c.get_first_child().constructor.name))"))
+        # hover name
+        s.move(*center(s, circle_js('Dark Style'))); time.sleep(1.0)
+        s.shot(f'{out}/03-hover-name.png')
+        # sound: before / after
+        s.shot(f'{out}/04-sound-before.png')
+        snd = center(s, circle_js('Sound'))
+        s.click(*snd); time.sleep(1.0)
+        s.shot(f'{out}/04-sound-after.png')
+        print('after sound:', s.notch())
+        s.click(*snd); time.sleep(0.8)
+        print('sound closed:', s.notch())
+        # network settings
+        wired = center(s, circle_js('Wired'))
         s.click(*wired); time.sleep(1.0)
-        s.shot(f'{out}/03b-click-opens-settings.png')
+        s.shot(f'{out}/05-network-open.png')
         s.click(*wired); time.sleep(0.8)
-        power = center(s, f"(function () {{ const find = a => {{ if (a instanceof St.Button && /power|shut/i.test(a.accessible_name ?? '')) return a; for (const c of a.get_children?.() ?? []) {{ const r = find(c); if (r) return r; }} return null; }}; return find({GRID}.get_children().find(c => c.powerToggle)); }})()")
-        s.click(*power); time.sleep(1.0)
-        s.shot(f'{out}/03c-power-menu.png')
-        s.click(*power); time.sleep(0.8)
+        # power mode
+        pm = center(s, circle_js('Power Mode'))
+        s.click(*pm); time.sleep(1.0)
+        s.shot(f'{out}/06-power-mode-open.png')
+        s.click(*pm); time.sleep(0.8)
+        # power menu
+        pw = center(s, circle_js('Power Off Menu'))
+        s.click(*pw); time.sleep(1.0)
+        s.shot(f'{out}/07-power-menu-open.png')
+        s.click(*pw); time.sleep(0.8)
+        print('after menus closed:', s.notch())
+        # a simple toggle changes immediately
+        dk = center(s, circle_js('Dark Style'))
+        before = s.eval(f"return {circle_js('Dark Style')}.checked")
+        s.click(*dk); time.sleep(0.6)
+        after = s.eval(f"return {circle_js('Dark Style')}.checked")
+        print('dark style toggled immediately:', before, '->', after)
+        s.shot(f'{out}/08-toggle-state.png')
         s.key('Escape'); time.sleep(0.8)
         print('after Esc:', s.notch())
         print('shell errors:', s.shell_errors())

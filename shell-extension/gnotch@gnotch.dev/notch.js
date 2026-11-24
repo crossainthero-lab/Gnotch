@@ -146,8 +146,9 @@ export class Notch {
         const headerH = st.get_int('notch-height') * s;
         let h = maxH;
         if (this._body.visible && this._bodyBox.get_n_children() > 0) {
-            const [, bodyH] = this._bodyBox.get_preferred_height(w - 36 * s);
-            h = Math.min(maxH, Math.max(120 * s, headerH + bodyH + 6 * s));
+            // the body box's padding is inside its width: ask for the notch width itself
+            const [, bodyH] = this._bodyBox.get_preferred_height(w);
+            h = Math.min(maxH, Math.max(96 * s, headerH + bodyH));
         }
         return [Math.round(w), Math.round(h)];
     }
@@ -164,7 +165,7 @@ export class Notch {
 
     place(animate) {
         if (this._destroyed) return;
-        if (this.expanded) this.ctrl.systemPage?.setWidth(this._expandedWidth() - 36 * this.scale);
+        if (this.expanded) this.ctrl.systemPage?.setWidth(this._expandedWidth() - 2 * 14 * this.scale, this.scale);
         const [w, h] = this.expanded ? this.expandedSize() : this.collapsedSize();
         const x = this._targetX(w), y = this.monitor.y;
         const ms = animate ? this.ctrl.animMs() : 0;

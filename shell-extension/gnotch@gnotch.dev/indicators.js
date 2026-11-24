@@ -14,7 +14,9 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const REPLACED_FALLBACK = ['dateMenu', 'activities', 'quickSettings'];
 
 export class IndicatorHost {
-    constructor(settings, compat) {
+    constructor(settings, compat, target, onOrder = null) {
+        this._target = target;
+        this._onOrder = onOrder;
         this._settings = settings;
         this._compat = compat;
         this._replaced = new Set([...REPLACED_FALLBACK, ...Object.keys(compat.replaced ?? {})]);
@@ -23,7 +25,6 @@ export class IndicatorHost {
         this._boxSignals = [];
         this._idle = 0;
         this._published = '';
-        this.strip = new St.BoxLayout({style_class: 'gnotch-indicators', x_expand: true, x_align: Clutter.ActorAlign.START, visible: false});
         const p = Main.panel;
         for (const box of [p._leftBox, p._centerBox, p._rightBox])
             this._boxSignals.push([box, box.connect('child-added', () => this._queueSync())]);
@@ -87,32 +88,42 @@ export class IndicatorHost {
         for (const role of [...this._items.keys()]) if (!area[role]) this._forget(role);
 
         this._order();
-        this.strip.visible = this.strip.get_n_children() > 0;
         this._publish(report);
     }
 
     _embed(role, ind) {
         const cur = this._items.get(role);
         const container = ind.container;
-        if (cur && cur.container === container && container.get_parent() === this.strip) return;
+        if (cur && cur.container === container && container.get_parent() === this._target) return;
         const parent = container.get_parent();
         const index = parent ? parent.get_children().indexOf(container) : -1;
         if (parent) parent.remove_child(container);
-        this.strip.add_child(container);
-        container.show();
+        container._gnRank = 3;
+        const orig = {xe: ind.x_expand, ye: ind.y_expand, xa: ind.x_align, ya: ind.y_align};
+        ind.set({x_expand: true, y_expand: true, x_align: Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.FILL});
+        ind.add_style_class_name('gnotch-circle');
+        this._target.add_child(container);
+        // Hidden indicators must not leave an empty cell: their container follows the indicator.
+        const visId = ind.connect('notify::visible', () => { container.visible = ind.visible; });
+        container.visible = ind.visible;
         const destroyId = ind.connect('destroy', () => this._forget(role));
-        this._items.set(role, {ind, container, parent, index, destroyId});
+        this._items.set(role, {ind, container, parent, index, destroyId, visId, orig});
+        if (this._px) container.set_size(this._px, this._px);
+    }
+
+    // PanelMenu.Button ignores CSS min-width, so circles are sized explicitly (px = logical pixels).
+    fit(px) {
+        this._px = Math.round(px);
+        for (const v of this._items.values()) v.container.set_size(this._px, this._px);
     }
 
     _order() {
         const want = this._settings.get_strv('indicators-order');
-        const children = this.strip.get_children();
-        const rank = c => {
-            const entry = [...this._items.entries()].find(([, v]) => v.container === c);
-            const i = entry ? want.indexOf(entry[0]) : -1;
-            return i < 0 ? 1e6 : i;
-        };
-        [...children].sort((a, b) => rank(a) - rank(b)).forEach((c, i) => this.strip.set_child_at_index(c, i));
+        for (const [role, v] of this._items) {
+            const i = want.indexOf(role);
+            v.container._gnOrder = i < 0 ? 900 + [...this._items.keys()].indexOf(role) : i;
+        }
+        this._onOrder?.();
     }
 
     _forget(role) {
@@ -126,14 +137,17 @@ export class IndicatorHost {
     _release(role) {
         const it = this._items.get(role);
         if (!it) return;
-        try { it.ind.disconnect(it.destroyId); } catch (_e) { /* already destroyed */ }
+        try { it.ind.disconnect(it.destroyId); it.ind.disconnect(it.visId); } catch (_e) { /* already destroyed */ }
         this._items.delete(role);
         this._putBack(it);
-        this.strip.visible = this.strip.get_n_children() > 0;
     }
 
     _putBack(it) {
         const {container, parent, index} = it;
+        it.ind.remove_style_class_name('gnotch-circle');
+        it.container.set_size(-1, -1);
+        it.container.show();
+        it.ind.set({x_expand: it.orig.xe, y_expand: it.orig.ye, x_align: it.orig.xa, y_align: it.orig.ya});
         if (container.get_parent()) container.get_parent().remove_child(container);
         if (parent && parent.get_stage()) {
             try { parent.insert_child_at_index(container, Math.min(Math.max(index, 0), parent.get_n_children())); } catch (e) { console.error(`gnotch: put back: ${e}`); }
@@ -154,6 +168,5 @@ export class IndicatorHost {
         this._boxSignals = [];
         this._settings.disconnect(this._settingsId);
         for (const role of [...this._items.keys()]) this._release(role);
-        this.strip.destroy();
     }
 }

@@ -56,12 +56,23 @@ class Controller {
         // Another extension (user-theme, a theme switcher) can reload the shell theme and drop
         // extension stylesheets that were loaded earlier; make sure ours is always part of it.
         this._themeCtx = St.ThemeContext.get_for_stage(global.stage);
-        sig(this._themeCtx, 'changed', () => this._ensureStylesheet());
+        sig(this._themeCtx, 'changed', () => this._themeChanged());
         this._ensureStylesheet();
 
         this._syncVisual();
         this._syncToggleShortcut();
         c.connect();
+    }
+
+    _themeChanged() {
+        this._ensureStylesheet();
+        if (this._themeTimer) return;
+        this._themeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 150, () => {
+            this._themeTimer = 0;
+            this.systemPage?.refreshStyle();
+            for (const n of this.notches) { n._applyStyle(); n.place(false); }
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     _ensureStylesheet() {
@@ -127,6 +138,8 @@ class Controller {
     }
 
     destroy() {
+        if (this._themeTimer) GLib.source_remove(this._themeTimer);
+        this._themeTimer = 0;
         this._ungrabAll();
         this._disableVisual();
         for (const [o, id] of this._signals) o.disconnect(id);
@@ -246,7 +259,7 @@ class Controller {
         case 'monitor-mode': case 'monitor': this._rebuildNotches(); break;
         case 'reserve-space': case 'notch-height': this._applyReserve(); this._restyle(); break;
         case 'appearance': case 'corner-radius': this._restyle(); break;
-        case 'discovered-indicators': case 'indicators-order': case 'indicators-hidden': case 'qs-columns':
+        case 'discovered-indicators': case 'indicators-order': case 'indicators-hidden':
         case 'default-page': break;
         default:
             if (!key.startsWith('clock-')) for (const n of this.notches) n.place(true);

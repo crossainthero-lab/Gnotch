@@ -175,7 +175,7 @@ def scenario_scales(out):
     # 1x is covered by every other scenario; this renders 200 % and (experimental, off on the dev machine) 150 %.
     for label, mon, scale, dconf in (
             ('2x', '3840x2160', 2.0, {}),
-            ('1.5x-experimental', '2560x1440', 1.5,
+            ('1.5x-experimental', '2880x1620', 1.5,
              {'/org/gnome/mutter/experimental-features': "['scale-monitor-framebuffer']"})):
         with realistic(monitors=(mon,), dconf=dconf) as s:
             s.display_config(layout=[(0, 0, scale, True)])
@@ -187,6 +187,26 @@ def scenario_scales(out):
             s.click(lx, 10); time.sleep(1.3)
             s.shot(f'{out}/07-scale-{label}-expanded.png')
             print(label, s.notch(), 'errors:', s.shell_errors())
+
+
+def scenario_record(out):
+    import record   # noqa: F401  (attaches Session.record_steps)
+    with realistic() as s:
+        calm(s)
+        steps = [
+            lambda: s.click(960, 10),                                   # expand
+            lambda: s.move(*center(s, circle_js('Dark Style'))),        # hover name
+            lambda: s.click(*center(s, circle_js('Sound'))),            # sound slider reveals
+            lambda: s.click(*center(s, circle_js('Sound'))),            # and folds away
+            lambda: s.click(*center(s, circle_js('Wired'))),            # network settings
+            lambda: s.click(*center(s, circle_js('Wired'))),
+            lambda: s.click(*center(s, circle_js('Power Off Menu'))),   # power menu
+            lambda: s.click(*center(s, circle_js('Power Off Menu'))),
+            lambda: s.key('Escape'),                                    # collapse
+        ]
+        info = s.record_steps(f'{out}/gnotch-animation.mp4', steps, settle=1.2)
+        print('recording:', info)
+        print('shell errors:', s.shell_errors())
 
 
 if __name__ == '__main__':

@@ -39,6 +39,8 @@ If `gsettings get org.gnome.shell disable-user-extensions` prints `true`, GNOME 
 
 **Restore the original panel:** Preferences → General → turn off "Replace the GNOME top panel", or `gnome-extensions disable gnotch@gnotch.dev`. Uninstall: `make uninstall` (your addon data in `~/.local/share/gnotch/data` is kept). Nothing is persisted that could leave the panel hidden after a shell restart without Gnotch enabled.
 
+The notch uses the Inter typeface (the closest open match to Apple's SF Pro; GNOME Shell cannot use SF Pro from a font list that has missing families). Install it with `sudo apt install fonts-inter`; without it the notch falls back to your default sans-serif.
+
 Open the notch by clicking it or with **Ctrl+Super+N**. `Esc` closes. Preferences: date and time format, notch size and position, monitors, indicator order and on/off, extension compatibility list, animation speed, addon manager.
 
 ## Official addons

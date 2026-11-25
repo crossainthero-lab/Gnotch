@@ -1,3 +1,12 @@
+/* Typeface: Inter, the closest open (SIL OFL) match to Apple's SF Pro (install with: sudo apt install fonts-inter).
+   GNOME Shell drops a font list that contains a quoted multi-word family ("SF Pro Text"), so keep it to single words. Tight tracking
+   and tabular figures keep the clock from twitching every minute. */
+.gnotch, .gnotch-tooltip {
+  font-family: Inter, sans-serif;
+  letter-spacing: -0.12px;
+}
+.gnotch-clock { letter-spacing: -0.2px; font-weight: 600; }
+
 /* Gnotch: black / white / neutral. No accent colour on purpose. */
 .gnotch {
   background-color: #000;

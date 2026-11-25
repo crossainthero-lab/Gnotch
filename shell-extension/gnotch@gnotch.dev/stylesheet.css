@@ -155,3 +155,25 @@
 
 /* hover name (lives in the top layer, outside .gnotch) */
 .gnotch-tooltip { background-color: rgba(28,28,28,0.97); color: #f2f2f2; font-size: 12px; font-weight: 500; padding: 4px 9px; border-radius: 8px; }
+
+/* ---- Gnotch settings page ---- */
+.gnotch .gnotch-settings { spacing: 8px; padding: 2px 4px 4px 4px; }
+.gnotch .gnotch-set-row { spacing: 5px; }
+.gnotch .gnotch-set-inline { padding: 2px 0; }
+.gnotch .gnotch-set-title { font-size: 13px; font-weight: 500; color: #f2f2f2; }
+.gnotch .gnotch-set-value { font-size: 12px; color: rgba(255,255,255,0.6); }
+.gnotch .gnotch-set-slider { -barlevel-height: 6px; -barlevel-background-color: rgba(255,255,255,0.16); -barlevel-active-background-color: #f2f2f2; -slider-handle-radius: 8px; color: #f2f2f2; height: 18px; }
+.gnotch .gnotch-set-slider:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); border-radius: 99px; }
+.gnotch .gnotch-seg { spacing: 2px; padding: 2px; border-radius: 99px; background-color: rgba(255,255,255,0.10); }
+.gnotch .gnotch-seg-button { padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.gnotch .gnotch-seg-button:hover { background-color: rgba(255,255,255,0.12); }
+.gnotch .gnotch-seg-active, .gnotch .gnotch-seg-active:hover { background-color: #f2f2f2; color: #0a0a0a; }
+.gnotch .gnotch-set-switchrow { border-radius: 10px; padding: 3px 0; }
+.gnotch .gnotch-set-switchrow:focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
+.gnotch .gnotch-set-more { font-size: 12px; color: rgba(255,255,255,0.65); padding: 4px 2px; border-radius: 8px; }
+.gnotch .gnotch-set-more:hover, .gnotch .gnotch-set-more:focus { color: #ffffff; }
+
+/* switch: on = light track with a DARK knob (the stock knob is white and vanishes on a light track) */
+.gnotch .toggle-switch.toggle-switch:checked { color: #0a0a0a !important; }
+.gnotch .toggle-switch.toggle-switch .handle { background-color: #ffffff; }
+.gnotch .toggle-switch.toggle-switch:checked .handle { background-color: #0a0a0a !important; }

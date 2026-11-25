@@ -9,8 +9,11 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {ViewRenderer} from './renderer.js';
+import {buildSettingsPage} from './settingsPage.js';
 
 export const SYSTEM_PAGE = '@system';
+export const SETTINGS_PAGE = '@settings';
+const internal = id => !id || id.startsWith('@');   // built-in pages are not addon ids
 
 export class Notch {
     constructor(ctrl, monitorIndex) {
@@ -22,7 +25,7 @@ export class Notch {
         this._viewSeq = 0;
         this._destroyed = false;
         this._renderer = new ViewRenderer((action, payload) => {
-            if (this.page && this.page !== SYSTEM_PAGE) ctrl.client.action(this.page, action, payload);
+            if (!internal(this.page)) ctrl.client.action(this.page, action, payload);
         });
         this._build();
         this._unsub = ctrl.clock.subscribe(() => this._updateClock());
@@ -63,12 +66,6 @@ export class Notch {
         this._header.add_child(this._right);
         this.actor.add_child(this._header);
 
-        this._gear = new St.Button({style_class: 'gnotch-icon-button', can_focus: true, accessible_name: 'Gnotch preferences',
-            child: new St.Icon({icon_name: 'emblem-system-symbolic', icon_size: 16})});
-        this._undoGear = this.ctrl.icons.skin(this._gear.child);
-        this._gear.connect('clicked', () => { this.collapse(); this.ctrl.ext.openPreferences(); });
-        this._right.add_child(this._gear);
-
         this._body = new St.ScrollView({style_class: 'gnotch-body', x_expand: true, y_expand: true, visible: false, opacity: 0,
             hscrollbar_policy: St.PolicyType.NEVER, vscrollbar_policy: St.PolicyType.AUTOMATIC, overlay_scrollbars: true});
         this._bodyBox = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true, style_class: 'gnotch-body-box'});
@@ -86,7 +83,10 @@ export class Notch {
         this.actor.connect('scroll-event', (_a, ev) => this._onScroll(ev));
         this.actor.connect('key-press-event', (_a, ev) => this._onKey(ev));
 
-        Main.layoutManager.addTopChrome(this.actor, {affectsStruts: false, trackFullscreen: true});
+        // trackFullscreen hides a chrome actor while a window is fullscreen on its monitor. By default the
+        // notch stays ABOVE fullscreen windows (setting show-over-fullscreen).
+        const over = this.ctrl.settings.get_boolean('show-over-fullscreen');
+        Main.layoutManager.addTopChrome(this.actor, {affectsStruts: false, trackFullscreen: !over});
     }
 
     destroy() {
@@ -113,7 +113,10 @@ export class Notch {
         const light = s.get_string('appearance') === 'light';
         this.actor.remove_style_class_name(light ? 'gnotch-dark' : 'gnotch-light');
         this.actor.add_style_class_name(light ? 'gnotch-light' : 'gnotch-dark');
-        this.actor.style = `border-radius: 0 0 ${this.expanded ? Math.round(r * 1.5) : r}px ${this.expanded ? Math.round(r * 1.5) : r}px;`;
+        const rr = this.expanded ? Math.round(r * 1.5) : r;
+        const a = Math.max(0.2, Math.min(1, s.get_int('background-opacity') / 100));
+        const bg = light ? `rgba(246,246,246,${a})` : `rgba(0,0,0,${a})`;
+        this.actor.style = `border-radius: 0 0 ${rr}px ${rr}px; background-color: ${bg};`;
         this._header.style = `min-height: ${h}px;`;
         this._ghost.visible = true;
     }
@@ -129,8 +132,8 @@ export class Notch {
     collapsedSize() {
         const s = this.scale, st = this.ctrl.settings;
         const [, nat] = this._header.get_preferred_width(-1);
-        const fixed = st.get_int('notch-width');
-        const w = fixed > 0 ? fixed * s : nat;
+        // notch-width is a MINIMUM: the notch widens for long date formats but never gets narrower
+        const w = Math.max(nat, st.get_int('notch-width') * s);
         return [Math.round(w), Math.round(st.get_int('notch-height') * s)];
     }
 
@@ -178,6 +181,11 @@ export class Notch {
         this.actor.ease({x, y, width: w, height: h, duration: ms, mode: Clutter.AnimationMode.EASE_OUT_QUINT});
     }
 
+    setOverviewHidden(hide) {
+        this.actor.opacity = hide ? 0 : 255;
+        this.actor.reactive = !hide;
+    }
+
     // ---- expand / collapse -------------------------------------------------------------------
     expand(pageId) {
         const pages = this.ctrl.pages();
@@ -223,7 +231,7 @@ export class Notch {
     collapse(immediate = false) {
         if (!this.expanded) return;
         this.expanded = false;
-        if (this.page && this.page !== SYSTEM_PAGE) this.ctrl.client.setExpanded(this.page, false);
+        if (!internal(this.page)) this.ctrl.client.setExpanded(this.page, false);
         if (this._click) { this.actor.remove_action(this._click); this._click = null; }
         if (this._grab) { Main.popModal(this._grab); this._grab = null; }
         this.ctrl.systemPage?.closeSubmenus();
@@ -257,7 +265,7 @@ export class Notch {
 
     // ---- pages ----------------------------------------------------------------------------------
     showPage(id, first = false) {
-        if (this.page && this.page !== id && this.page !== SYSTEM_PAGE) this.ctrl.client.setExpanded(this.page, false);
+        if (this.page && this.page !== id && !internal(this.page)) this.ctrl.client.setExpanded(this.page, false);
         this.page = id;
         this._renderSwitcher();
         this._detachSystem();
@@ -268,13 +276,18 @@ export class Notch {
             if (!first) { this.place(true); this._settle(); }
             return;
         }
+        if (id === SETTINGS_PAGE) {
+            this._bodyBox.add_child(buildSettingsPage(this.ctrl.settings, this.ctrl.icons, () => { this.collapse(); this.ctrl.ext.openPreferences(); }));
+            if (!first) { this.place(true); this._settle(); }
+            return;
+        }
         this.ctrl.client.setExpanded(id, true);
         this.refreshView();
     }
 
     async refreshView() {
         const id = this.page, seq = ++this._viewSeq;
-        if (!id || id === SYSTEM_PAGE) return;
+        if (internal(id)) return;
         let tree = null;
         try { tree = await this.ctrl.client.getView(id); } catch (_e) { tree = null; }
         if (seq !== this._viewSeq || !this.expanded || id !== this.page || this._destroyed) return;

@@ -13,18 +13,22 @@
       <description>When false the original panel is restored and the notch is hidden. Disabling the extension also restores the panel.</description>
     </key>
     <key name="reserve-space" type="s">
-      <default>"reserve"</default>
-      <summary>Maximised windows: overlap (use the full screen height) or reserve (start below the notch)</summary>
+      <default>"overlap"</default>
+      <summary>Windows: overlap (use the whole screen, the notch floats above) or reserve (start below the notch)</summary>
     </key>
 
     <!-- Geometry -->
     <key name="notch-height" type="i"><range min="22" max="56"/><default>32</default><summary>Collapsed height in logical pixels</summary></key>
-    <key name="notch-width" type="i"><range min="0" max="600"/><default>0</default><summary>Collapsed width in logical pixels, 0 fits the clock</summary></key>
+    <key name="notch-width" type="i"><range min="0" max="600"/><default>240</default><summary>Minimum collapsed width in logical pixels (widens for long date formats)</summary></key>
     <key name="corner-radius" type="i"><range min="0" max="32"/><default>16</default><summary>Radius of the lower corners</summary></key>
     <key name="position" type="s"><default>"center"</default><summary>Horizontal placement: center, left, right</summary></key>
     <key name="offset-x" type="i"><range min="-2000" max="2000"/><default>0</default><summary>Horizontal offset in logical pixels</summary></key>
-    <key name="expanded-width" type="i"><range min="300" max="1000"/><default>360</default></key>
+    <key name="expanded-width" type="i"><range min="300" max="1000"/><default>420</default></key>
     <key name="expanded-height" type="i"><range min="240" max="1000"/><default>640</default><summary>Largest height the expanded panel may reach</summary></key>
+
+    <key name="background-opacity" type="i"><range min="20" max="100"/><default>100</default><summary>Notch background opacity in percent (transparent mode below 100)</summary></key>
+    <key name="show-over-fullscreen" type="b"><default>true</default><summary>Keep the notch above fullscreen windows</summary></key>
+    <key name="hide-in-overview" type="b"><default>true</default><summary>Hide the notch while the Overview is open</summary></key>
 
     <!-- Monitors -->
     <key name="monitor-mode" enum="org.gnome.shell.extensions.gnotch.monitor-mode"><default>"primary"</default><summary>Which monitors get a notch</summary></key>

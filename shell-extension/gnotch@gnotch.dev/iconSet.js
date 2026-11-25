@@ -49,6 +49,8 @@ const MAP = [
     [/^(input-keyboard|keyboard-brightness)/, 'keyboard'],
     [/^(org\.gnome\.Settings-accessibility|preferences-desktop-accessibility)/, 'accessibility'],
     [/^object-rotate/, 'rotate-cw'],
+    [/^view-grid/, 'layout-grid'],
+    [/^(preferences-other|org\.gnome\.tweaks)/, 'sliders-horizontal'],
     [/^go-next/, 'chevron-right'],
     [/^go-down/, 'chevron-down'],
     [/^(window-close|edit-delete)/, 'x'],

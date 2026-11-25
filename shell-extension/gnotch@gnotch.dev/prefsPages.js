@@ -40,9 +40,11 @@ export function generalPage(settings) {
     const panel = new Adw.PreferencesGroup({title: 'GNOME top panel',
         description: 'Gnotch replaces the stock panel. The panel keeps running out of sight so its Quick Settings and indicators can be reused, and comes back untouched when this is turned off or the extension is disabled.'});
     panel.add(toggle(settings, 'Replace the GNOME top panel', 'replace-panel'));
-    panel.add(combo(settings, 'Maximised windows', 'reserve-space', ['reserve', 'overlap'],
-        ['Start below the notch', 'Use the full screen height'],
-        'Full height lets windows run under the notch and its Overview search field; their centred title can be covered.'));
+    panel.add(combo(settings, 'Windows', 'reserve-space', ['overlap', 'reserve'],
+        ['Use the whole screen', 'Start below the notch'],
+        'Whole screen: windows and fullscreen apps cover the top edge and the notch floats above. Their centred title can sit under it.'));
+    panel.add(toggle(settings, 'Show over fullscreen apps', 'show-over-fullscreen'));
+    panel.add(toggle(settings, 'Hide in the Overview', 'hide-in-overview', 'The Overview search field sits where the notch is.'));
     page.add(panel);
 
     const clock = new Adw.PreferencesGroup({title: 'Date and time'});
@@ -75,7 +77,7 @@ export function generalPage(settings) {
 
     const size = new Adw.PreferencesGroup({title: 'Size and position'});
     size.add(spin(settings, 'Height', 'notch-height', 22, 56, 1, 'Logical pixels. Also the space reserved below the notch.'));
-    size.add(spin(settings, 'Width', 'notch-width', 0, 600, 10, '0 fits the date and time.'));
+    size.add(spin(settings, 'Minimum width', 'notch-width', 0, 600, 10, 'Widens for long date formats, never narrower.'));
     size.add(spin(settings, 'Corner radius', 'corner-radius', 0, 32));
     size.add(combo(settings, 'Position', 'position', ['center', 'left', 'right'], ['Centre', 'Left', 'Right']));
     size.add(spin(settings, 'Horizontal offset', 'offset-x', -2000, 2000, 10));
@@ -88,6 +90,7 @@ export function generalPage(settings) {
         adjustment: new Gtk.Adjustment({lower: 0, upper: 2, step_increment: 0.1, value: settings.get_double('animation-intensity')}), digits: 1});
     anim.connect('notify::value', () => settings.set_double('animation-intensity', anim.value));
     look.add(anim);
+    look.add(spin(settings, 'Opacity (percent)', 'background-opacity', 20, 100, 5, 'Below 100 the notch is see-through.'));
     look.add(combo(settings, 'Theme', 'appearance', ['dark', 'light'], ['Black', 'Light']));
     const sc = new Adw.EntryRow({title: 'Toggle shortcut (e.g. <Control><Super>n)', text: settings.get_strv('toggle-shortcut')[0] ?? ''});
     sc.show_apply_button = true;

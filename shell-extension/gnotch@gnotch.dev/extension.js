@@ -14,7 +14,7 @@ import {IconSet} from './iconSet.js';
 import {PanelHost} from './panelHost.js';
 import {SystemPage} from './systemPage.js';
 import {loadCompat} from './compat.js';
-import {Notch, SYSTEM_PAGE} from './notch.js';
+import {Notch, SYSTEM_PAGE, SETTINGS_PAGE} from './notch.js';
 
 const BASE_ANIM_MS = 260;
 
@@ -39,7 +39,8 @@ class Controller {
         sig(this.settings, 'changed', (_s, key) => this._onSettings(key));
         sig(Main.layoutManager, 'monitors-changed', () => this._rebuildNotches());
         sig(Main.layoutManager, 'system-modal-opened', () => this.collapseAll(true));
-        sig(Main.overview, 'showing', () => this.collapseAll(true));
+        sig(Main.overview, 'showing', () => { this.collapseAll(true); this._overview(true); });
+        sig(Main.overview, 'hiding', () => this._overview(false));
         sig(global.display, 'accelerator-activated', (_d, action) => this._accels.get(action)?.());
 
         const c = this.client;
@@ -162,8 +163,9 @@ class Controller {
 
     pages() {
         const pages = [];
-        if (this.systemPage) pages.push({id: SYSTEM_PAGE, name: 'System', icon: 'applications-system-symbolic'});
+        if (this.systemPage) pages.push({id: SYSTEM_PAGE, name: 'System', icon: 'view-grid-symbolic'});
         for (const a of this.liveAddons()) pages.push({id: a.id, name: a.name, icon: a.icon, busy: a.activities?.length > 0});
+        pages.push({id: SETTINGS_PAGE, name: 'Gnotch settings', icon: 'preferences-other-symbolic'});
         return pages;
     }
 
@@ -258,12 +260,19 @@ class Controller {
         case 'replace-panel': this._syncVisual(); break;
         case 'monitor-mode': case 'monitor': this._rebuildNotches(); break;
         case 'reserve-space': case 'notch-height': this._applyReserve(); this._restyle(); break;
-        case 'appearance': case 'corner-radius': this._restyle(); break;
-        case 'discovered-indicators': case 'indicators-order': case 'indicators-hidden':
+        case 'appearance': case 'corner-radius': case 'background-opacity': this._restyle(); break;
+        case 'show-over-fullscreen': this._rebuildNotches(); break;
+        case 'discovered-indicators': case 'indicators-order': case 'indicators-hidden': case 'hide-in-overview':
         case 'default-page': break;
         default:
             if (!key.startsWith('clock-')) for (const n of this.notches) n.place(true);
         }
+    }
+
+    // While the Overview is open its search field sits where the notch is: stay out of the way.
+    _overview(open) {
+        const hide = open && this.settings.get_boolean('hide-in-overview');
+        for (const n of this.notches) n.setOverviewHidden(hide);
     }
 
     _restyle() { for (const n of this.notches) { n._applyStyle(); n.place(true); } }
